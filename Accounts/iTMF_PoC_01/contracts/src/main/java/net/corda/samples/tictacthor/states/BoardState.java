@@ -27,6 +27,7 @@ public class BoardState implements LinearState {
     private UniqueIdentifier playerX;
     private AnonymousParty me;
     private AnonymousParty competitor;
+    private AnonymousParty investigation;
     private boolean isPlayerXTurn;
     private char[][] board ;
     private UniqueIdentifier linearId;
