@@ -54,15 +54,14 @@ public class SendShippingRequest extends FlowLogic<String> {
     }
 
     //private variables
-    private AnonymousParty whoAmI ;
-    private AnonymousParty whereTo;
+    private String whoAmI ;
+    private String whereTo;
     private Party shipper;
     private String cargo;
 
 
     //public constructor
-//    public SendShippingRequest(String whoAmI, String whereTo, Party shipper, String Cargo){
-    public SendShippingRequest(AnonymousParty whoAmI, AnonymousParty whereTo, Party shipper, String Cargo){
+    public SendShippingRequest(String whoAmI, String whereTo, Party shipper, String Cargo){
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
         this.shipper = shipper;
@@ -75,10 +74,10 @@ public class SendShippingRequest extends FlowLogic<String> {
         //grab account service
         AccountService accountService = getServiceHub().cordaService(KeyManagementBackedAccountService.class);
         //grab the account information
-        AccountInfo myAccount = accountService.accountInfo(String.valueOf(whoAmI)).get(0).getState().getData();
+        AccountInfo myAccount = accountService.accountInfo(whoAmI).get(0).getState().getData();
         PublicKey myKey = subFlow(new NewKeyForAccount(myAccount.getIdentifier().getId())).getOwningKey();
 
-        AccountInfo targetAccount = accountService.accountInfo(String.valueOf(whereTo)).get(0).getState().getData();
+        AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
 
         //generating State for transfer
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
