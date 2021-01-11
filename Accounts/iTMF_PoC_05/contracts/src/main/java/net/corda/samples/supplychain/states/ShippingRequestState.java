@@ -19,13 +19,13 @@ import java.util.List;
 public class ShippingRequestState implements ContractState {
 
     private AnonymousParty pickUpFrom;
-    private String deliverTo;
+    private AnonymousParty deliverTo;
     private Party shippper;
     private String cargo;
     private List<AbstractParty> participants;
     private Status status;
 
-    public ShippingRequestState(AnonymousParty pickUpFrom, String deliverTo, Party shippper, String cargo) {
+    public ShippingRequestState(AnonymousParty pickUpFrom, AnonymousParty deliverTo, Party shippper, String cargo) {
         this.pickUpFrom = pickUpFrom;
         this.deliverTo = deliverTo;
         this.shippper = shippper;
@@ -34,6 +34,7 @@ public class ShippingRequestState implements ContractState {
         this.participants = new ArrayList<AbstractParty>();
         participants.add(pickUpFrom);
         participants.add(shippper);
+        participants.add(deliverTo);
     }
 
     @CordaSerializable
@@ -49,11 +50,9 @@ public class ShippingRequestState implements ContractState {
         this.pickUpFrom = pickUpFrom;
     }
 
-    public String getDeliverTo() {
-        return deliverTo;
-    }
+    public AnonymousParty getDeliverTo() {  return deliverTo; }
 
-    public void setDeliverTo(String deliverTo) {
+    public void setDeliverTo(AnonymousParty deliverTo) {
         this.deliverTo = deliverTo;
     }
 
