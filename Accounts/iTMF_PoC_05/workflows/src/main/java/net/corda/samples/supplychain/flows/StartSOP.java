@@ -2,19 +2,21 @@ package net.corda.samples.supplychain.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo;
-import com.r3.corda.lib.accounts.workflows.services.AccountService;
 import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount;
+import com.r3.corda.lib.accounts.workflows.services.AccountService;
 import com.r3.corda.lib.accounts.workflows.services.KeyManagementBackedAccountService;
 import com.sun.istack.NotNull;
-import net.corda.samples.supplychain.accountUtilities.NewKeyForAccount;
-import net.corda.samples.supplychain.contracts.CargoStateContract;
-import net.corda.samples.supplychain.states.CargoState;
 import net.corda.core.crypto.TransactionSignature;
 import net.corda.core.flows.*;
 import net.corda.core.identity.AnonymousParty;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
+import net.corda.samples.supplychain.accountUtilities.NewKeyForAccount;
+//import net.corda.samples.supplychain.contracts.SOPStateContract;
+import net.corda.samples.supplychain.contracts.SOPStateContract;
+//import net.corda.samples.supplychain.states.SOPState;
+import net.corda.samples.supplychain.states.SOPState;
 
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 // ******************
 @InitiatingFlow
 @StartableByRPC
-public class SendCargo extends FlowLogic<String> {
+public class StartSOP extends FlowLogic<String> {
 
     //private variables
     private String pickupFrom ;
@@ -35,7 +37,7 @@ public class SendCargo extends FlowLogic<String> {
 
 
     //public constructor
-    public SendCargo(String pickupFrom, String shipTo, String cargo){
+    public StartSOP(String pickupFrom, String shipTo, String cargo){
         this.pickupFrom = pickupFrom;
         this.whereTo = shipTo;
         this.cargo = cargo;
@@ -56,7 +58,7 @@ public class SendCargo extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        CargoState output = new CargoState(new AnonymousParty(myKey),targetAcctAnonymousParty,cargo,getOurIdentity());
+        SOPState output = new SOPState(new AnonymousParty(myKey),targetAcctAnonymousParty,cargo,getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -69,7 +71,7 @@ public class SendCargo extends FlowLogic<String> {
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
                 .addOutputState(output)
-                .addCommand(new CargoStateContract.Commands.Create(), Arrays.asList(targetAcctAnonymousParty.getOwningKey(),getOurIdentity().getOwningKey()));
+                .addCommand(new SOPStateContract.Commands.Create(), Arrays.asList(targetAcctAnonymousParty.getOwningKey(),getOurIdentity().getOwningKey()));
 
         //self sign Transaction
         SignedTransaction locallySignedTx = getServiceHub().signInitialTransaction(txbuilder,Arrays.asList(getOurIdentity().getOwningKey()));
@@ -93,13 +95,13 @@ public class SendCargo extends FlowLogic<String> {
 }
 
 
-@InitiatedBy(SendCargo.class)
-class SendCargoResponder extends FlowLogic<Void> {
+@InitiatedBy(StartSOP.class)
+class StartSOPResponder extends FlowLogic<Void> {
     //private variable
     private FlowSession counterpartySession;
 
     //Constructor
-    public SendCargoResponder(FlowSession counterpartySession) {
+    public StartSOPResponder(FlowSession counterpartySession) {
         this.counterpartySession = counterpartySession;
     }
 

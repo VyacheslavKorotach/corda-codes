@@ -1,10 +1,10 @@
 package net.corda.samples.supplychain.states;
 
-import net.corda.samples.supplychain.contracts.CargoStateContract;
 import net.corda.core.contracts.BelongsToContract;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.AnonymousParty;
+import net.corda.samples.supplychain.contracts.SOPStateContract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -14,8 +14,8 @@ import java.util.List;
 // *********
 // * State *
 // *********
-@BelongsToContract(CargoStateContract.class)
-public class CargoState implements ContractState {
+@BelongsToContract(SOPStateContract.class)
+public class SOPState implements ContractState {
 
     private AnonymousParty pickUpFrom;
     private AnonymousParty deliverTo;
@@ -24,7 +24,7 @@ public class CargoState implements ContractState {
     private List<AbstractParty> participants;
 
 
-    public CargoState(AnonymousParty pickUpFrom, AnonymousParty deliverTo, String cargo, AbstractParty shipper) {
+    public SOPState(AnonymousParty pickUpFrom, AnonymousParty deliverTo, String cargo, AbstractParty shipper) {
         this.pickUpFrom = pickUpFrom;
         this.deliverTo = deliverTo;
         this.cargo = cargo;
