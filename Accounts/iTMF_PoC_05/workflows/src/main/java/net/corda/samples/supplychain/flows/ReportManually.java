@@ -5,7 +5,6 @@ import net.corda.core.flows.FlowException;
 import net.corda.core.flows.FlowLogic;
 import net.corda.core.flows.FlowSession;
 import net.corda.core.flows.InitiatingFlow;
-import net.corda.core.identity.AnonymousParty;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.utilities.ProgressTracker;
@@ -16,7 +15,7 @@ public class ReportManually extends FlowLogic<Void> {
     private final SignedTransaction signedTransaction;
     private final Party regulator;
 
-    public ReportManually(SignedTransaction signedTransaction, AnonymousParty regulator) {
+    public ReportManually(SignedTransaction signedTransaction, Party regulator) {
         this.signedTransaction = signedTransaction;
         this.regulator = regulator;
     }

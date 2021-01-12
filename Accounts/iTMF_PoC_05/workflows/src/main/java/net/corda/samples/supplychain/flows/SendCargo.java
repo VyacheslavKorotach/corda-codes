@@ -85,7 +85,7 @@ public class SendCargo extends FlowLogic<String> {
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
 
         // We also distribute the transaction to the national regulator manually.
-        subFlow(new ReportManually(signedByCounterParty, sellerAnonymousParty));
+        subFlow(new ReportManually(signedByCounterParty, myAccount.getHost()));
 
         return "send " + cargo+ " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
 
