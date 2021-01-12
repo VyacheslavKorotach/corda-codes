@@ -69,9 +69,14 @@ public class StartSOP extends FlowLogic<String> {
         final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0); // METHOD 1
         // final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB")); // METHOD 2
 
+//        TransactionBuilder txbuilder = new TransactionBuilder(notary)
+//                .addOutputState(output)
+//                .addCommand(new SOPStateContract.Commands.Create(), Arrays.asList(targetAcctAnonymousParty.getOwningKey(),getOurIdentity().getOwningKey()));
+
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
                 .addOutputState(output)
                 .addCommand(new SOPStateContract.Commands.Create(), Arrays.asList(targetAcctAnonymousParty.getOwningKey(),getOurIdentity().getOwningKey()));
+
 
         //self sign Transaction
         SignedTransaction locallySignedTx = getServiceHub().signInitialTransaction(txbuilder,Arrays.asList(getOurIdentity().getOwningKey()));
@@ -87,7 +92,7 @@ public class StartSOP extends FlowLogic<String> {
         List<FlowSession> sessions = Arrays.asList(initiateFlow(targetAccount.getHost()), initiateFlow(myAccount.getHost()));
         // We distribute the transaction to both the buyer and the state regulator using `FinalityFlow`.
 
-        subFlow(new FinalityFlow(signedByCounterParty, sessions));
+        subFlow(new FinalityFlow(locallySignedTx, sessions));
 
 //        subFlow(new FinalityFlow(signedByCounterParty,
 //                Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
