@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 // ******************
 // * Initiator flow *
 // ******************
@@ -50,6 +49,8 @@ public class SendCargo extends FlowLogic<String> {
         //grab the account information
         AccountInfo myAccount = accountService.accountInfo(pickupFrom).get(0).getState().getData();
         PublicKey myKey = subFlow(new NewKeyForAccount(myAccount.getIdentifier().getId())).getOwningKey();
+
+        AnonymousParty sellerAnonymousParty = subFlow(new RequestKeyForAccount(myAccount));
 
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
@@ -82,6 +83,10 @@ public class SendCargo extends FlowLogic<String> {
         //Finalize
         subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
+
+        // We also distribute the transaction to the national regulator manually.
+        subFlow(new ReportManually(signedByCounterParty, sellerAnonymousParty));
+
         return "send " + cargo+ " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
 
     }
