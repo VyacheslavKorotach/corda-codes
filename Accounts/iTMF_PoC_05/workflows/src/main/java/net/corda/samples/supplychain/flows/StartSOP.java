@@ -89,13 +89,13 @@ public class StartSOP extends FlowLogic<String> {
 
         //Finalize
 
-        List<FlowSession> sessions = Arrays.asList(initiateFlow(targetAccount.getHost()), initiateFlow(myAccount.getHost()));
+//        List<FlowSession> sessions = Arrays.asList(initiateFlow(targetAccount.getHost()), initiateFlow(myAccount.getHost()));
         // We distribute the transaction to both the buyer and the state regulator using `FinalityFlow`.
 
-        subFlow(new FinalityFlow(locallySignedTx, sessions));
+//        subFlow(new FinalityFlow(signedByCounterParty, sessions));
 
-//        subFlow(new FinalityFlow(signedByCounterParty,
-//                Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
+        subFlow(new FinalityFlow(signedByCounterParty,
+                Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())), initiateFlow(myAccount.getHost());
 
         // We also distribute the transaction to the national regulator manually.
 //        subFlow(new ReportManually(signedByCounterParty, myAccount.getHost()));
