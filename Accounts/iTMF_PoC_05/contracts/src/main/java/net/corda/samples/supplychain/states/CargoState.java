@@ -73,5 +73,6 @@ public class CargoState implements ContractState {
 //    }
 
     @NotNull @Override
-    public List<AbstractParty> getParticipants() { return Arrays.asList(shipper, deliverTo, pickUpFrom); }
+//    public List<AbstractParty> getParticipants() { return Arrays.asList(shipper, deliverTo, pickUpFrom); }
+    public List<AbstractParty> getParticipants() { return Arrays.asList(shipper, pickUpFrom); }
 }
