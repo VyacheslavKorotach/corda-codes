@@ -29,14 +29,14 @@ import java.util.stream.Collectors;
 public class StartSOP extends FlowLogic<String> {
 
     //private variables
-    private String paramedic;
+    private String pickupFrom;
     private String patient;
     private String sop;
 
 
     //public constructor
-    public StartSOP(String paramedic, String shipTo, String sop){
-        this.paramedic = paramedic;
+    public StartSOP(String pickupFrom, String shipTo, String sop){
+        this.pickupFrom = pickupFrom;
         this.patient = shipTo;
         this.sop = sop;
     }
@@ -47,7 +47,7 @@ public class StartSOP extends FlowLogic<String> {
         //grab account service
         AccountService accountService = getServiceHub().cordaService(KeyManagementBackedAccountService.class);
         //grab the account information
-        AccountInfo myAccount = accountService.accountInfo(paramedic).get(0).getState().getData();
+        AccountInfo myAccount = accountService.accountInfo(pickupFrom).get(0).getState().getData();
         PublicKey myKey = subFlow(new NewKeyForAccount(myAccount.getIdentifier().getId())).getOwningKey();
 
 //        AnonymousParty sellerAnonymousParty = subFlow(new RequestKeyForAccount(myAccount));
