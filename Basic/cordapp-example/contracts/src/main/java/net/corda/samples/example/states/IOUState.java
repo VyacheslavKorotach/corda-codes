@@ -21,28 +21,28 @@ import java.util.List;
  */
 @BelongsToContract(IOUContract.class)
 public class IOUState implements LinearState, QueryableState {
-    private final Integer value1;
+    private final Integer value;
     private final Party lender;
     private final Party borrower;
     private final UniqueIdentifier linearId;
 
     /**
-     * @param value1 the value of the IOU.
+     * @param value the value of the IOU.
      * @param lender the party issuing the IOU.
      * @param borrower the party receiving and approving the IOU.
      */
-    public IOUState(Integer value1,
+    public IOUState(Integer value,
                     Party lender,
                     Party borrower,
                     UniqueIdentifier linearId)
     {
-        this.value1 = value1;
+        this.value = value;
         this.lender = lender;
         this.borrower = borrower;
         this.linearId = linearId;
     }
 
-    public Integer getValue() { return value1; }
+    public Integer getValue() { return value; }
     public Party getLender() { return lender; }
     public Party getBorrower() { return borrower; }
     @Override public UniqueIdentifier getLinearId() { return linearId; }
@@ -55,7 +55,7 @@ public class IOUState implements LinearState, QueryableState {
             return new IOUSchemaV1.PersistentIOU(
                     this.lender.getName().toString(),
                     this.borrower.getName().toString(),
-                    this.value1,
+                    this.value,
                     this.linearId.getId());
         } else {
             throw new IllegalArgumentException("Unrecognised schema $schema");
@@ -68,6 +68,6 @@ public class IOUState implements LinearState, QueryableState {
 
     @Override
     public String toString() {
-        return String.format("IOUState(value1=%s, lender=%s, borrower=%s, linearId=%s)", value1, lender, borrower, linearId);
+        return String.format("IOUState(value=%s, lender=%s, borrower=%s, linearId=%s)", value, lender, borrower, linearId);
     }
 }
