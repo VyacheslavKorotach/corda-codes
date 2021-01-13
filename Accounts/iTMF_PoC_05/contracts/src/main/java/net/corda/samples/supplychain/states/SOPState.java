@@ -17,61 +17,61 @@ import java.util.List;
 @BelongsToContract(SOPStateContract.class)
 public class SOPState implements ContractState {
 
-    private AnonymousParty pickUpFrom;
-    private AnonymousParty deliverTo;
-    private String cargo;
-    private AbstractParty shipper;
+    private AnonymousParty paramedic;
+    private AnonymousParty patient;
+    private String sopSubStepDescription;
+    private AbstractParty regulator;
     private List<AbstractParty> participants;
 
 
-    public SOPState(AnonymousParty pickUpFrom, AnonymousParty deliverTo, String cargo, AbstractParty shipper) {
-        this.pickUpFrom = pickUpFrom;
-        this.deliverTo = deliverTo;
-        this.cargo = cargo;
-        this.shipper = shipper;
+    public SOPState(AnonymousParty paramedic, AnonymousParty patient, String sopSubStepDescription, AbstractParty regulator) {
+        this.paramedic = paramedic;
+        this.patient = patient;
+        this.sopSubStepDescription = sopSubStepDescription;
+        this.regulator = regulator;
         this.participants = new ArrayList<AbstractParty>();
-        participants.add(pickUpFrom);
-        participants.add(deliverTo);
-        participants.add(shipper);
+        participants.add(paramedic);
+        participants.add(patient);
+        participants.add(regulator);
     }
 
-    public AnonymousParty getPickUpFrom() {
-        return pickUpFrom;
+    public AnonymousParty getParamedic() {
+        return paramedic;
     }
 
-    public void setPickUpFrom(AnonymousParty pickUpFrom) {
-        this.pickUpFrom = pickUpFrom;
+    public void setParamedic(AnonymousParty paramedic) {
+        this.paramedic = paramedic;
     }
 
-    public AnonymousParty getDeliverTo() {
-        return deliverTo;
+    public AnonymousParty getPatient() {
+        return patient;
     }
 
-    public void setDeliverTo(AnonymousParty deliverTo) {
-        this.deliverTo = deliverTo;
+    public void setPatient(AnonymousParty patient) {
+        this.patient = patient;
     }
 
-    public String getCargo() {
-        return cargo;
+    public String getSopSubStepDescription() {
+        return sopSubStepDescription;
     }
 
-    public void setCargo(String cargo) {
-        this.cargo = cargo;
+    public void setSopSubStepDescription(String sopSubStepDescription) {
+        this.sopSubStepDescription = sopSubStepDescription;
     }
 
-    public AbstractParty getShipper() {
-        return shipper;
+    public AbstractParty getRegulator() {
+        return regulator;
     }
 
-    public void setShipper(AnonymousParty shipper) {
-        this.shipper = shipper;
+    public void setRegulator(AnonymousParty regulator) {
+        this.regulator = regulator;
+    }
+
+    @NotNull @Override
+    public List<AbstractParty> getParticipants() {
+        return this.participants;
     }
 
 //    @NotNull @Override
-//    public List<AbstractParty> getParticipants() {
-//        return this.participants;
-//    }
-
-    @NotNull @Override
-    public List<AbstractParty> getParticipants() { return Arrays.asList(shipper, deliverTo, pickUpFrom); }
+//    public List<AbstractParty> getParticipants() { return Arrays.asList(regulator, patient, paramedic); }
 }

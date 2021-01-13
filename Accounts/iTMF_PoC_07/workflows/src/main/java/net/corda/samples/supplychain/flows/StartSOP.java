@@ -13,7 +13,9 @@ import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.samples.supplychain.accountUtilities.NewKeyForAccount;
+//import net.corda.samples.supplychain.contracts.SOPStateContract;
 import net.corda.samples.supplychain.contracts.SOPStateContract;
+//import net.corda.samples.supplychain.states.SOPState;
 import net.corda.samples.supplychain.states.SOPState;
 
 import java.security.PublicKey;
