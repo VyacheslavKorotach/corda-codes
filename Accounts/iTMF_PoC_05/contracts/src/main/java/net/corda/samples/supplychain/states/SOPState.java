@@ -17,30 +17,30 @@ import java.util.List;
 @BelongsToContract(SOPStateContract.class)
 public class SOPState implements ContractState {
 
-    private AnonymousParty paramedic;
+    private AnonymousParty pickUpFrom;
     private AnonymousParty patient;
     private String sop;
     private AbstractParty regulator;
     private List<AbstractParty> participants;
 
 
-    public SOPState(AnonymousParty paramedic, AnonymousParty patient, String sop, AbstractParty regulator) {
-        this.paramedic = paramedic;
+    public SOPState(AnonymousParty pickUpFrom, AnonymousParty patient, String sop, AbstractParty regulator) {
+        this.pickUpFrom = pickUpFrom;
         this.patient = patient;
         this.sop = sop;
         this.regulator = regulator;
         this.participants = new ArrayList<AbstractParty>();
-        participants.add(paramedic);
+        participants.add(pickUpFrom);
         participants.add(patient);
         participants.add(regulator);
     }
 
-    public AnonymousParty getParamedic() {
-        return paramedic;
+    public AnonymousParty getPickUpFrom() {
+        return pickUpFrom;
     }
 
-    public void setParamedic(AnonymousParty paramedic) {
-        this.paramedic = paramedic;
+    public void setPickUpFrom(AnonymousParty pickUpFrom) {
+        this.pickUpFrom = pickUpFrom;
     }
 
     public AnonymousParty getPatient() {
@@ -71,5 +71,5 @@ public class SOPState implements ContractState {
 //    }
 
     @NotNull @Override
-    public List<AbstractParty> getParticipants() { return Arrays.asList(regulator, patient, paramedic); }
+    public List<AbstractParty> getParticipants() { return Arrays.asList(regulator, patient, pickUpFrom); }
 }
