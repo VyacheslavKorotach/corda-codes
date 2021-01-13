@@ -32,15 +32,15 @@ public class SendCargo extends FlowLogic<String> {
     //private variables
     private String pickupFrom ;
     private String whereTo;
-    private String cargo;
+    private String cargo0;
     private String cargo1;
 
 
     //public constructor
-    public SendCargo(String pickupFrom, String shipTo, String cargo, String cargo1){
+    public SendCargo(String pickupFrom, String shipTo, String cargo0, String cargo1){
         this.pickupFrom = pickupFrom;
         this.whereTo = shipTo;
-        this.cargo = cargo;
+        this.cargo0 = cargo0;
         this.cargo1 = cargo1;
     }
 
@@ -57,7 +57,7 @@ public class SendCargo extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        CargoState output = new CargoState(new AnonymousParty(myKey),targetAcctAnonymousParty,cargo, cargo1, getOurIdentity());
+        CargoState output = new CargoState(new AnonymousParty(myKey),targetAcctAnonymousParty, cargo0, cargo1, getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -84,7 +84,7 @@ public class SendCargo extends FlowLogic<String> {
         //Finalize
         subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
-        return "send " + cargo + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team" + cargo1;
+        return "send " + cargo0 + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team" + cargo1;
 
     }
 }
