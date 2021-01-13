@@ -84,7 +84,7 @@ public class SendCargo extends FlowLogic<String> {
         //Finalize
         subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
-        return "send " + cargo+ " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
+        return "send " + cargo + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team" + cargo1;
 
     }
 }
