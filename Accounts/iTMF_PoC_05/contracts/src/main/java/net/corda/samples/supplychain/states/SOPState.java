@@ -8,6 +8,7 @@ import net.corda.samples.supplychain.contracts.SOPStateContract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // *********
@@ -54,9 +55,7 @@ public class SOPState implements ContractState {
         return sop;
     }
 
-    public void setSop(String sop) {
-        this.sop = sop;
-    }
+    public void setSop(String sop) { this.sop = sop; }
 
     public AbstractParty getRegulator() {
         return regulator;
@@ -66,11 +65,11 @@ public class SOPState implements ContractState {
         this.regulator = regulator;
     }
 
-    @NotNull @Override
-    public List<AbstractParty> getParticipants() {
-        return this.participants;
-    }
-
 //    @NotNull @Override
-//    public List<AbstractParty> getParticipants() { return Arrays.asList(regulator, patient, paramedic); }
+//    public List<AbstractParty> getParticipants() {
+//        return this.participants;
+//    }
+
+    @NotNull @Override
+    public List<AbstractParty> getParticipants() { return Arrays.asList(regulator, patient, paramedic); }
 }

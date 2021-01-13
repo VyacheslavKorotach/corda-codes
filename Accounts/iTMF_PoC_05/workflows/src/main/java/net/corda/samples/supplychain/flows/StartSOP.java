@@ -29,16 +29,16 @@ import java.util.stream.Collectors;
 public class StartSOP extends FlowLogic<String> {
 
     //private variables
-    private String pickupFrom ;
-    private String whereTo;
-    private String cargo;
+    private String paramedic;
+    private String patient;
+    private String sop;
 
 
     //public constructor
-    public StartSOP(String pickupFrom, String shipTo, String cargo){
-        this.pickupFrom = pickupFrom;
-        this.whereTo = shipTo;
-        this.cargo = cargo;
+    public StartSOP(String paramedic, String shipTo, String sop){
+        this.paramedic = paramedic;
+        this.patient = shipTo;
+        this.sop = sop;
     }
 
     @Suspendable
@@ -47,16 +47,16 @@ public class StartSOP extends FlowLogic<String> {
         //grab account service
         AccountService accountService = getServiceHub().cordaService(KeyManagementBackedAccountService.class);
         //grab the account information
-        AccountInfo myAccount = accountService.accountInfo(pickupFrom).get(0).getState().getData();
+        AccountInfo myAccount = accountService.accountInfo(paramedic).get(0).getState().getData();
         PublicKey myKey = subFlow(new NewKeyForAccount(myAccount.getIdentifier().getId())).getOwningKey();
 
 //        AnonymousParty sellerAnonymousParty = subFlow(new RequestKeyForAccount(myAccount));
 
-        AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
+        AccountInfo targetAccount = accountService.accountInfo(patient).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        SOPState output = new SOPState(new AnonymousParty(myKey),targetAcctAnonymousParty,cargo,getOurIdentity());
+        SOPState output = new SOPState(new AnonymousParty(myKey),targetAcctAnonymousParty, sop,getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -103,7 +103,7 @@ public class StartSOP extends FlowLogic<String> {
         // We also distribute the transaction to the national regulator manually.
         subFlow(new ReportManually(signedByCounterParty, myAccount.getHost()));
 
-        return "send " + cargo+ " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
+        return "send " + sop + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
 
     }
 }
