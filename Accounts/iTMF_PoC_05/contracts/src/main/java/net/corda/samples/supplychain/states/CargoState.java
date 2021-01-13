@@ -17,30 +17,30 @@ import java.util.List;
 @BelongsToContract(CargoStateContract.class)
 public class CargoState implements ContractState {
 
-    private AnonymousParty pickUpFro;
+    private AnonymousParty pickUpFrom;
     private AnonymousParty deliverTo;
     private String cargo;
     private AbstractParty shipper;
     private List<AbstractParty> participants;
 
 
-    public CargoState(AnonymousParty pickUpFro, AnonymousParty deliverTo, String cargo, AbstractParty shipper) {
-        this.pickUpFro = pickUpFro;
+    public CargoState(AnonymousParty pickUpFrom, AnonymousParty deliverTo, String cargo, AbstractParty shipper) {
+        this.pickUpFrom = pickUpFrom;
         this.deliverTo = deliverTo;
         this.cargo = cargo;
         this.shipper = shipper;
         this.participants = new ArrayList<AbstractParty>();
-        participants.add(pickUpFro);
+        participants.add(pickUpFrom);
         participants.add(deliverTo);
         participants.add(shipper);
     }
 
-    public AnonymousParty getPickUpFro() {
-        return pickUpFro;
+    public AnonymousParty getPickUpFrom() {
+        return pickUpFrom;
     }
 
-    public void setPickUpFro(AnonymousParty pickUpFro) {
-        this.pickUpFro = pickUpFro;
+    public void setPickUpFrom(AnonymousParty pickUpFrom) {
+        this.pickUpFrom = pickUpFrom;
     }
 
     public AnonymousParty getDeliverTo() {
@@ -71,5 +71,5 @@ public class CargoState implements ContractState {
 //    }
 
     @NotNull @Override
-    public List<AbstractParty> getParticipants() { return Arrays.asList(shipper, deliverTo, pickUpFro); }
+    public List<AbstractParty> getParticipants() { return Arrays.asList(shipper, deliverTo, pickUpFrom); }
 }
