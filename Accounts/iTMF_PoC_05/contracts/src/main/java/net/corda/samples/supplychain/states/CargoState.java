@@ -51,9 +51,7 @@ public class CargoState implements ContractState {
         this.deliverTo = deliverTo;
     }
 
-    public String getCargo() {
-        return cargo;
-    }
+    public String getCargo() { return cargo; }
 
     public void setCargo(String cargo) {
         this.cargo = cargo;

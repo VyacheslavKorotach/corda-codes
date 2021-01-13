@@ -8,7 +8,6 @@ import net.corda.samples.supplychain.contracts.SOPStateContract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // *********
@@ -19,15 +18,15 @@ public class SOPState implements ContractState {
 
     private AnonymousParty paramedic;
     private AnonymousParty patient;
-    private String sopSubStepDescription;
+    private String sop;
     private AbstractParty regulator;
     private List<AbstractParty> participants;
 
 
-    public SOPState(AnonymousParty paramedic, AnonymousParty patient, String sopSubStepDescription, AbstractParty regulator) {
+    public SOPState(AnonymousParty paramedic, AnonymousParty patient, String sop, AbstractParty regulator) {
         this.paramedic = paramedic;
         this.patient = patient;
-        this.sopSubStepDescription = sopSubStepDescription;
+        this.sop = sop;
         this.regulator = regulator;
         this.participants = new ArrayList<AbstractParty>();
         participants.add(paramedic);
@@ -51,12 +50,12 @@ public class SOPState implements ContractState {
         this.patient = patient;
     }
 
-    public String getSopSubStepDescription() {
-        return sopSubStepDescription;
+    public String getSop() {
+        return sop;
     }
 
-    public void setSopSubStepDescription(String sopSubStepDescription) {
-        this.sopSubStepDescription = sopSubStepDescription;
+    public void setSop(String sop) {
+        this.sop = sop;
     }
 
     public AbstractParty getRegulator() {
