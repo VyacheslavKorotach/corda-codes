@@ -48,7 +48,7 @@ public class IOUContract implements Contract {
 
             // IOU-specific constraints.
             require.using("The IOU's value must be non-negative.",
-                    out.getValue() > 0);
+                    out.getValue1() > 0);
 
             return null;
         });

@@ -109,7 +109,7 @@ public class FlowTests {
             assert (txOutputs.size() == 1);
 
             IOUState recordedState = (IOUState) txOutputs.get(0).getData();
-            assertEquals(recordedState.getValue(), iouValue);
+            assertEquals(recordedState.getValue1(), iouValue);
             assertEquals(recordedState.getLender(), a.getInfo().getLegalIdentities().get(0));
             assertEquals(recordedState.getBorrower(), b.getInfo().getLegalIdentities().get(0));
         }
@@ -129,7 +129,7 @@ public class FlowTests {
                 List<StateAndRef<IOUState>> ious = node.getServices().getVaultService().queryBy(IOUState.class).getStates();
                 assertEquals(1, ious.size());
                 IOUState recordedState = ious.get(0).getState().getData();
-                assertEquals(recordedState.getValue(), iouValue);
+                assertEquals(recordedState.getValue1(), iouValue);
                 assertEquals(recordedState.getLender(), a.getInfo().getLegalIdentities().get(0));
                 assertEquals(recordedState.getBorrower(), b.getInfo().getLegalIdentities().get(0));
                 return null;

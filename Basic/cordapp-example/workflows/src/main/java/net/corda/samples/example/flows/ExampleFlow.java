@@ -149,7 +149,7 @@ public class ExampleFlow {
                         ContractState output = stx.getTx().getOutputs().get(0).getData();
                         require.using("This must be an IOU transaction.", output instanceof IOUState);
                         IOUState iou = (IOUState) output;
-                        require.using("I won't accept IOUs with a value over 100.", iou.getValue() <= 100);
+                        require.using("I won't accept IOUs with a value over 100.", iou.getValue1() <= 100);
                         return null;
                     });
                 }
