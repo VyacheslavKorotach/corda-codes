@@ -33,13 +33,15 @@ public class SendCargo extends FlowLogic<String> {
     private String pickupFrom ;
     private String whereTo;
     private String cargo;
+    private String cargo1;
 
 
     //public constructor
-    public SendCargo(String pickupFrom, String shipTo, String cargo){
+    public SendCargo(String pickupFrom, String shipTo, String cargo, String cargo1){
         this.pickupFrom = pickupFrom;
         this.whereTo = shipTo;
         this.cargo = cargo;
+        this.cargo1 = cargo1;
     }
 
     @Suspendable
@@ -55,7 +57,7 @@ public class SendCargo extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        CargoState output = new CargoState(new AnonymousParty(myKey),targetAcctAnonymousParty,cargo,getOurIdentity());
+        CargoState output = new CargoState(new AnonymousParty(myKey),targetAcctAnonymousParty,cargo, cargo1, getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
