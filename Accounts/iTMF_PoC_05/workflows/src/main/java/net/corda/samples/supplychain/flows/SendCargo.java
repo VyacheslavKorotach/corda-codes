@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class SendCargo extends FlowLogic<String> {
 
     //private variables
-    private String pickupFrom ;
+    private String pickupFrom;
     private String whereTo;
     private String cargo;
 
