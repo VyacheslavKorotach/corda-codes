@@ -56,7 +56,7 @@ public class StartSOP extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        SOPState output = new SOPState(new AnonymousParty(myKey),targetAcctAnonymousParty, sop,getOurIdentity());
+        SOPState output = new SOPState(new AnonymousParty(myKey),targetAcctAnonymousParty, sop, getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
