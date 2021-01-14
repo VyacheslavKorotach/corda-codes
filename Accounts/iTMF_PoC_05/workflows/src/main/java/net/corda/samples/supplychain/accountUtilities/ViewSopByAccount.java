@@ -12,6 +12,7 @@ import net.corda.samples.supplychain.states.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,8 +41,11 @@ public class ViewSopByAccount extends FlowLogic<List<String>>{
         List<String> payments = getServiceHub().getVaultService().queryBy(PaymentState.class,criteria).getStates().stream().map(
                 it -> "\nPayment State : " +it.getState().getData().getAmount()).collect(Collectors.toList());
 
-        List<String> Cargos = getServiceHub().getVaultService().queryBy(SOPState.class,criteria).getStates().stream().map(
+        List<String> Cargos = getServiceHub().getVaultService().queryBy(SOPState.class, criteria).getStates().stream().map(
                 it -> "\nSOP State : " + it.getState().getData().getSop()).collect(Collectors.toList());
+
+        List<String> SOPValues = getServiceHub().getVaultService().queryBy(SOPState.class, criteria).getStates().stream().map(
+                it -> "\nSOP Value : " + it.getState().getData().getValue()).collect(Collectors.toList());
 
         List<String> invoices = getServiceHub().getVaultService().queryBy(InvoiceState.class,criteria).getStates().stream().map(
                 it -> "\nInvoice State : " + it.getState().getData().getAmount()).collect(Collectors.toList());
@@ -49,6 +53,6 @@ public class ViewSopByAccount extends FlowLogic<List<String>>{
         List<String> shippingRequest = getServiceHub().getVaultService().queryBy(ShippingRequestState.class,criteria).getStates().stream().map(
                 it -> "\nshippingRequest State : " + it.getState().getData().getCargo()).collect(Collectors.toList());
 
-        return Stream.of(InternalMessages, payments, Cargos,invoices,shippingRequest).flatMap(Collection::stream).collect(Collectors.toList());
+        return Stream.of(InternalMessages, payments, Cargos, SOPValues, invoices,shippingRequest).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }
