@@ -19,16 +19,16 @@ public class SOPState implements ContractState {
     private final int sopStepNum;
     private AnonymousParty paramedic;
     private AnonymousParty patient;
-    private String sop;
+    private String sopDescription;
     private AbstractParty regulator;
     private List<AbstractParty> participants;
 
 
-    public SOPState(int sopStepNum, AnonymousParty paramedic, AnonymousParty patient, String sop, AbstractParty regulator) {
+    public SOPState(int sopStepNum, AnonymousParty paramedic, AnonymousParty patient, String sopDescription, AbstractParty regulator) {
         this.sopStepNum = sopStepNum;
         this.paramedic = paramedic;
         this.patient = patient;
-        this.sop = sop;
+        this.sopDescription = sopDescription;
         this.regulator = regulator;
         this.participants = new ArrayList<AbstractParty>();
         participants.add(paramedic);
@@ -56,11 +56,11 @@ public class SOPState implements ContractState {
         this.patient = patient;
     }
 
-    public String getSop() {
-        return sop;
+    public String getSopDescription() {
+        return sopDescription;
     }
 
-    public void setSop(String sop) { this.sop = sop; }
+    public void setSopDescription(String sopDescription) { this.sopDescription = sopDescription; }
 
     public AbstractParty getRegulator() {
         return regulator;

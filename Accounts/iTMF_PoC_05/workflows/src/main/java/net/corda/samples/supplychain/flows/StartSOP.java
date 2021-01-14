@@ -32,15 +32,15 @@ public class StartSOP extends FlowLogic<String> {
     private final Integer sopStepNum;
     private String paramedic;
     private String patient;
-    private String sop;
+    private String sopDescription;
 
 
     //public constructor_
-    public StartSOP(Integer sopStepNum, String paramedic, String shipTo, String sop){
+    public StartSOP(Integer sopStepNum, String paramedic, String patient, String sopDescription){
         this.sopStepNum = sopStepNum;
         this.paramedic = paramedic;
-        this.patient = shipTo;
-        this.sop = sop;
+        this.patient = patient;
+        this.sopDescription = sopDescription;
     }
 
     @Suspendable
@@ -58,7 +58,7 @@ public class StartSOP extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        SOPState output = new SOPState(sopStepNum, new AnonymousParty(myKey),targetAcctAnonymousParty, sop, getOurIdentity());
+        SOPState output = new SOPState(sopStepNum, new AnonymousParty(myKey),targetAcctAnonymousParty, sopDescription, getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -105,7 +105,7 @@ public class StartSOP extends FlowLogic<String> {
         // We also distribute the transaction to the national regulator manually.
         subFlow(new ReportManually(signedByCounterParty, myAccount.getHost()));
 
-        return "send " + sop + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
+        return "send " + sopDescription + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
 
     }
 }

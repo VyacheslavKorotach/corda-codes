@@ -41,7 +41,7 @@ public class ViewSopByAccount extends FlowLogic<List<String>>{
                 it -> "\nPayment State : " +it.getState().getData().getAmount()).collect(Collectors.toList());
 
         List<String> Cargos = getServiceHub().getVaultService().queryBy(SOPState.class, criteria).getStates().stream().map(
-                it -> "\nSOP State : " + it.getState().getData().getSop()).collect(Collectors.toList());
+                it -> "\nSOP State : " + it.getState().getData().getSopDescription()).collect(Collectors.toList());
 
         List<String> SOPValues = getServiceHub().getVaultService().queryBy(SOPState.class, criteria).getStates().stream().map(
                 it -> "\nSOP Value : " + it.getState().getData().getSopStepNum()).collect(Collectors.toList());
