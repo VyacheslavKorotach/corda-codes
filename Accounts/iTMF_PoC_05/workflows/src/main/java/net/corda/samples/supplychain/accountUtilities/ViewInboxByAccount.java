@@ -39,7 +39,7 @@ public class ViewInboxByAccount extends FlowLogic<List<String>>{
                 it -> "\nPayment State : " +it.getState().getData().getAmount()).collect(Collectors.toList());
 
         List<String> Cargos = getServiceHub().getVaultService().queryBy(CargoState.class,criteria).getStates().stream().map(
-                it -> "\nCargo State : " + it.getState().getData().getCargo()).collect(Collectors.toList());
+                it -> "\nCargo State : " + it.getState().getData().getSop()).collect(Collectors.toList());
 
         List<String> invoices = getServiceHub().getVaultService().queryBy(InvoiceState.class,criteria).getStates().stream().map(
                 it -> "\nInvoice State : " + it.getState().getData().getAmount()).collect(Collectors.toList());

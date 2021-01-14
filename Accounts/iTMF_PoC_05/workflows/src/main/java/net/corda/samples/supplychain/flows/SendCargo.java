@@ -31,14 +31,14 @@ public class SendCargo extends FlowLogic<String> {
     //private variables
     private String pickupFrom;
     private String whereTo;
-    private String cargo;
+    private String sop;
 
 
     //public constructor
-    public SendCargo(String pickupFrom, String shipTo, String cargo){
+    public SendCargo(String pickupFrom, String shipTo, String sop){
         this.pickupFrom = pickupFrom;
         this.whereTo = shipTo;
-        this.cargo = cargo;
+        this.sop = sop;
     }
 
     @Suspendable
@@ -56,7 +56,7 @@ public class SendCargo extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        CargoState output = new CargoState(new AnonymousParty(myKey),targetAcctAnonymousParty,cargo,getOurIdentity());
+        CargoState output = new CargoState(new AnonymousParty(myKey),targetAcctAnonymousParty, sop,getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -87,7 +87,7 @@ public class SendCargo extends FlowLogic<String> {
         // We also distribute the transaction to the national regulator manually.
         subFlow(new ReportManually(signedByCounterParty, myAccount.getHost()));
 
-        return "send " + cargo+ " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
+        return "send " + sop + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
 
     }
 }
