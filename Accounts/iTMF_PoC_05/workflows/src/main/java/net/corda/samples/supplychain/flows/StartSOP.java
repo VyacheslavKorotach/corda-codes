@@ -29,16 +29,16 @@ import java.util.stream.Collectors;
 public class StartSOP extends FlowLogic<String> {
 
     //private variables
-    private final Integer subStepNumber;
-    private String pickupFrom;
+    private final Integer sopStepNum;
+    private String paramedic;
     private String patient;
     private String sop;
 
 
     //public constructor_
-    public StartSOP(Integer subStepNumber, String pickupFrom, String shipTo, String sop){
-        this.subStepNumber = subStepNumber;
-        this.pickupFrom = pickupFrom;
+    public StartSOP(Integer sopStepNum, String paramedic, String shipTo, String sop){
+        this.sopStepNum = sopStepNum;
+        this.paramedic = paramedic;
         this.patient = shipTo;
         this.sop = sop;
     }
@@ -49,7 +49,7 @@ public class StartSOP extends FlowLogic<String> {
         //grab account service
         AccountService accountService = getServiceHub().cordaService(KeyManagementBackedAccountService.class);
         //grab the account information
-        AccountInfo myAccount = accountService.accountInfo(pickupFrom).get(0).getState().getData();
+        AccountInfo myAccount = accountService.accountInfo(paramedic).get(0).getState().getData();
         PublicKey myKey = subFlow(new NewKeyForAccount(myAccount.getIdentifier().getId())).getOwningKey();
 
 //        AnonymousParty sellerAnonymousParty = subFlow(new RequestKeyForAccount(myAccount));
@@ -58,7 +58,7 @@ public class StartSOP extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        SOPState output = new SOPState(subStepNumber, new AnonymousParty(myKey),targetAcctAnonymousParty, sop, getOurIdentity());
+        SOPState output = new SOPState(sopStepNum, new AnonymousParty(myKey),targetAcctAnonymousParty, sop, getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*

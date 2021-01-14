@@ -16,36 +16,36 @@ import java.util.List;
 // *********
 @BelongsToContract(SOPStateContract.class)
 public class SOPState implements ContractState {
-    private final int sopn;
-    private AnonymousParty pickUpFrom;
+    private final int sopStepNum;
+    private AnonymousParty paramedic;
     private AnonymousParty patient;
     private String sop;
     private AbstractParty regulator;
     private List<AbstractParty> participants;
 
 
-    public SOPState(int sopn, AnonymousParty pickUpFrom, AnonymousParty patient, String sop, AbstractParty regulator) {
-        this.sopn = sopn;
-        this.pickUpFrom = pickUpFrom;
+    public SOPState(int sopStepNum, AnonymousParty paramedic, AnonymousParty patient, String sop, AbstractParty regulator) {
+        this.sopStepNum = sopStepNum;
+        this.paramedic = paramedic;
         this.patient = patient;
         this.sop = sop;
         this.regulator = regulator;
         this.participants = new ArrayList<AbstractParty>();
-        participants.add(pickUpFrom);
+        participants.add(paramedic);
         participants.add(patient);
         participants.add(regulator);
     }
 
-    public int getSopn() {
-        return sopn;
+    public int getSopStepNum() {
+        return sopStepNum;
     }
 
-    public AnonymousParty getPickUpFrom() {
-        return pickUpFrom;
+    public AnonymousParty getParamedic() {
+        return paramedic;
     }
 
-    public void setPickUpFrom(AnonymousParty pickUpFrom) {
-        this.pickUpFrom = pickUpFrom;
+    public void setParamedic(AnonymousParty paramedic) {
+        this.paramedic = paramedic;
     }
 
     public AnonymousParty getPatient() {
@@ -76,5 +76,5 @@ public class SOPState implements ContractState {
 //    }
 
     @NotNull @Override
-    public List<AbstractParty> getParticipants() { return Arrays.asList(regulator, patient, pickUpFrom); }
+    public List<AbstractParty> getParticipants() { return Arrays.asList(regulator, patient, paramedic); }
 }
