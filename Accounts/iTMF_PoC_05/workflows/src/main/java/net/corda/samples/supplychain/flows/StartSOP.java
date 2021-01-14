@@ -29,15 +29,15 @@ import java.util.stream.Collectors;
 public class StartSOP extends FlowLogic<String> {
 
     //private variables
-    private final Integer iouValue;
+    private final Integer subStepNumber;
     private String pickupFrom;
     private String patient;
     private String sop;
 
 
     //public constructor_
-    public StartSOP(Integer iouValue, String pickupFrom, String shipTo, String sop){
-        this.iouValue = iouValue;
+    public StartSOP(Integer subStepNumber, String pickupFrom, String shipTo, String sop){
+        this.subStepNumber = subStepNumber;
         this.pickupFrom = pickupFrom;
         this.patient = shipTo;
         this.sop = sop;
@@ -58,7 +58,7 @@ public class StartSOP extends FlowLogic<String> {
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
         //generating State for transfer
-        SOPState output = new SOPState(iouValue, new AnonymousParty(myKey),targetAcctAnonymousParty, sop, getOurIdentity());
+        SOPState output = new SOPState(subStepNumber, new AnonymousParty(myKey),targetAcctAnonymousParty, sop, getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*

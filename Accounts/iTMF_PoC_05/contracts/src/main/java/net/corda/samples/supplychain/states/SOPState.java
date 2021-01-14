@@ -16,7 +16,7 @@ import java.util.List;
 // *********
 @BelongsToContract(SOPStateContract.class)
 public class SOPState implements ContractState {
-    private final int value;
+    private final int sopn;
     private AnonymousParty pickUpFrom;
     private AnonymousParty patient;
     private String sop;
@@ -24,8 +24,8 @@ public class SOPState implements ContractState {
     private List<AbstractParty> participants;
 
 
-    public SOPState(int value, AnonymousParty pickUpFrom, AnonymousParty patient, String sop, AbstractParty regulator) {
-        this.value = value;
+    public SOPState(int sopn, AnonymousParty pickUpFrom, AnonymousParty patient, String sop, AbstractParty regulator) {
+        this.sopn = sopn;
         this.pickUpFrom = pickUpFrom;
         this.patient = patient;
         this.sop = sop;
@@ -36,8 +36,8 @@ public class SOPState implements ContractState {
         participants.add(regulator);
     }
 
-    public int getValue() {
-        return value;
+    public int getSopn() {
+        return sopn;
     }
 
     public AnonymousParty getPickUpFrom() {
