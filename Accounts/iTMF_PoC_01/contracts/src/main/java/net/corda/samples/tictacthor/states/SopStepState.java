@@ -8,7 +8,7 @@ import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.AnonymousParty;
 import net.corda.core.serialization.ConstructorForDeserialization;
 import net.corda.core.serialization.CordaSerializable;
-import net.corda.samples.tictacthor.contracts.SopContract;
+import net.corda.samples.tictacthor.contracts.SopStepContract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -17,8 +17,8 @@ import java.util.List;
 // *********
 // * State *
 // *********
-@BelongsToContract(SopContract.class)
-public class SopState implements LinearState {
+@BelongsToContract(SopStepContract.class)
+public class SopStepState implements LinearState {
 
 
     private UniqueIdentifier paramedic;
@@ -31,7 +31,7 @@ public class SopState implements LinearState {
     private UniqueIdentifier linearId;
     private Status status;
 
-    public SopState(UniqueIdentifier paramedic, UniqueIdentifier patient, AnonymousParty me, AnonymousParty counterparty) {
+    public SopStepState(UniqueIdentifier paramedic, UniqueIdentifier patient, AnonymousParty me, AnonymousParty counterparty) {
         //dynamic
         this.paramedic = paramedic;
         this.patient = patient;
@@ -46,10 +46,10 @@ public class SopState implements LinearState {
     }
 
     @ConstructorForDeserialization
-    public SopState(UniqueIdentifier paramedic, UniqueIdentifier patient,
-                    AnonymousParty me, AnonymousParty counterparty,
-                    boolean isPlayerXTurn, UniqueIdentifier linearId,
-                    char[][] sop, Status status) {
+    public SopStepState(UniqueIdentifier paramedic, UniqueIdentifier patient,
+                        AnonymousParty me, AnonymousParty counterparty,
+                        boolean isPlayerXTurn, UniqueIdentifier linearId,
+                        char[][] sop, Status status) {
         this.paramedic = paramedic;
         this.patient = patient;
         this.me = me;
@@ -91,7 +91,7 @@ public class SopState implements LinearState {
         return newsop;
     }
 
-    public SopState returnNewSopAfterMove(Pair<Integer,Integer> pos, AnonymousParty me, AnonymousParty competitor){
+    public SopStepState returnNewSopAfterMove(Pair<Integer,Integer> pos, AnonymousParty me, AnonymousParty competitor){
         if((pos.getFirst() > 2) ||(pos.getSecond()> 2)){
             throw new IllegalStateException("Invalid sop index.");
         }
@@ -101,11 +101,11 @@ public class SopState implements LinearState {
         }else{
             newborad[pos.getFirst()][pos.getSecond()] = 'O';
         }
-        if(SopContract.SopUtils.isSopCompleted(newborad)){
-            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn,this.linearId, newborad, Status.SOP_COMPLETED);
+        if(SopStepContract.SopUtils.isSopCompleted(newborad)){
+            SopStepState b = new SopStepState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn,this.linearId, newborad, Status.SOP_COMPLETED);
             return b;
         }else{
-            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn, this.linearId, newborad, Status.SOP_IN_PROGRESS);
+            SopStepState b = new SopStepState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn, this.linearId, newborad, Status.SOP_IN_PROGRESS);
             return b;
         }
     }
