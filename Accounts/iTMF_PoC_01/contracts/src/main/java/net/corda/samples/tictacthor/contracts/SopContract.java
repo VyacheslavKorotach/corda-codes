@@ -40,7 +40,7 @@ public class SopContract implements Contract {
                 return null;
             });
 
-        } else if (command.getValue() instanceof SopContract.Commands.SubmitTurn){
+        } else if (command.getValue() instanceof SopContract.Commands.SubmitSubStep){
 
         }else if (command.getValue() instanceof SopContract.Commands.EndSop){
 
@@ -54,7 +54,7 @@ public class SopContract implements Contract {
     public interface Commands extends CommandData {
         //In our hello-world app, We will only have one command.
         class StartSop implements Commands {}
-        class SubmitTurn implements Commands {}
+        class SubmitSubStep implements Commands {}
         class EndSop implements Commands {}
     }
 
