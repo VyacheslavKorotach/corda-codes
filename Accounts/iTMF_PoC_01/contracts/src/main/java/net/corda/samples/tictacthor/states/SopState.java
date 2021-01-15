@@ -101,7 +101,7 @@ public class SopState implements LinearState {
         }else{
             newborad[pos.getFirst()][pos.getSecond()] = 'O';
         }
-        if(SopContract.SopUtils.isSopComplited(newborad)){
+        if(SopContract.SopUtils.isSopCompleted(newborad)){
             SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn,this.linearId, newborad, Status.SOP_COMPLETED);
             return b;
         }else{

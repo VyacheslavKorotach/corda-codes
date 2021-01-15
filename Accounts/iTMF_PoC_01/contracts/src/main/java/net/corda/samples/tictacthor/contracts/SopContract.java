@@ -59,7 +59,7 @@ public class SopContract implements Contract {
     }
 
     public static class SopUtils{
-        public static Boolean isSopComplited(char[][] sop){
+        public static Boolean isSopCompleted(char[][] sop){
             return (sop[0][0] == sop [0][1] && sop[0][0] == sop [0][2] && (sop[0][0] == 'X' || sop[0][0] == 'O')) ||
                     (sop[0][0] == sop [1][1] && sop[0][0] == sop [2][2]&& (sop[0][0] == 'X' || sop[0][0] == 'O')) ||
                     (sop[0][0] == sop [1][0] && sop[0][0] == sop [2][0]&& (sop[0][0] == 'X' || sop[0][0] == 'O')) ||
