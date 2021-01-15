@@ -49,16 +49,16 @@ public class StartSOP extends FlowLogic<String> {
         //grab account service
         AccountService accountService = getServiceHub().cordaService(KeyManagementBackedAccountService.class);
         //grab the account information
-        AccountInfo myAccount = accountService.accountInfo(paramedic).get(0).getState().getData();
-        PublicKey myKey = subFlow(new NewKeyForAccount(myAccount.getIdentifier().getId())).getOwningKey();
+        AccountInfo paramedicAccount = accountService.accountInfo(paramedic).get(0).getState().getData();
+        PublicKey paramedicKey = subFlow(new NewKeyForAccount(paramedicAccount.getIdentifier().getId())).getOwningKey();
 
-//        AnonymousParty sellerAnonymousParty = subFlow(new RequestKeyForAccount(myAccount));
+//        AnonymousParty sellerAnonymousParty = subFlow(new RequestKeyForAccount(paramedicAccount));
 
-        AccountInfo targetAccount = accountService.accountInfo(patient).get(0).getState().getData();
-        AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
+        AccountInfo patientAccount = accountService.accountInfo(patient).get(0).getState().getData();
+        AnonymousParty patientAnonymousParty = subFlow(new RequestKeyForAccount(patientAccount));
 
         //generating State for transfer
-        SOPState output = new SOPState(sopStepNum, new AnonymousParty(myKey),targetAcctAnonymousParty, sopDescription, getOurIdentity());
+        SOPState output = new SOPState(sopStepNum, new AnonymousParty(paramedicKey),patientAnonymousParty, sopDescription, getOurIdentity());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -69,27 +69,22 @@ public class StartSOP extends FlowLogic<String> {
         final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0); // METHOD 1
         // final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB")); // METHOD 2
 
-//        TransactionBuilder txbuilder = new TransactionBuilder(notary)
-//                .addOutputState(output)
-//                .addCommand(new SOPStateContract.Commands.Create(), Arrays.asList(targetAcctAnonymousParty.getOwningKey(),getOurIdentity().getOwningKey()));
-
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
                 .addOutputState(output)
-                .addCommand(new SOPStateContract.Commands.Create(), Arrays.asList(targetAcctAnonymousParty.getOwningKey(),getOurIdentity().getOwningKey()));
-
+                .addCommand(new SOPStateContract.Commands.Create(), Arrays.asList(patientAnonymousParty.getOwningKey(),getOurIdentity().getOwningKey()));
 
         //self sign Transaction
         SignedTransaction locallySignedTx = getServiceHub().signInitialTransaction(txbuilder,Arrays.asList(getOurIdentity().getOwningKey()));
 
         //Collect sigs
-        FlowSession sessionForAccountToSendTo = initiateFlow(targetAccount.getHost());
+        FlowSession sessionForAccountToSendTo = initiateFlow(patientAccount.getHost());
         List<TransactionSignature> accountToMoveToSignature = (List<TransactionSignature>) subFlow(new CollectSignatureFlow(locallySignedTx,
-                sessionForAccountToSendTo,targetAcctAnonymousParty.getOwningKey()));
+                sessionForAccountToSendTo,patientAnonymousParty.getOwningKey()));
         SignedTransaction signedByCounterParty = locallySignedTx.withAdditionalSignatures(accountToMoveToSignature);
 
         //Finalize
 
-//        List<FlowSession> sessions = Arrays.asList(initiateFlow(targetAccount.getHost()), initiateFlow(myAccount.getHost()));
+//        List<FlowSession> sessions = Arrays.asList(initiateFlow(patientAccount.getHost()), initiateFlow(paramedicAccount.getHost()));
         // We distribute the transaction to both the buyer and the state regulator using `FinalityFlow`.
 
 //        subFlow(new FinalityFlow(signedByCounterParty, sessions));
@@ -98,14 +93,14 @@ public class StartSOP extends FlowLogic<String> {
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
 
 //        List<FlowSession> sessions = Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList());
-//        sessions.add(initiateFlow(myAccount.getHost()));
+//        sessions.add(initiateFlow(paramedicAccount.getHost()));
 //        subFlow(new FinalityFlow(signedByCounterParty,sessions));
 
 
         // We also distribute the transaction to the national regulator manually.
-        subFlow(new ReportManually(signedByCounterParty, myAccount.getHost()));
+        subFlow(new ReportManually(signedByCounterParty, paramedicAccount.getHost()));
 
-        return "send " + sopDescription + " to " + targetAccount.getHost().getName().getOrganisation() + "'s "+ targetAccount.getName() + " team";
+        return "send " + sopDescription + " to " + patientAccount.getHost().getName().getOrganisation() + "'s "+ patientAccount.getName() + " team";
 
     }
 }
