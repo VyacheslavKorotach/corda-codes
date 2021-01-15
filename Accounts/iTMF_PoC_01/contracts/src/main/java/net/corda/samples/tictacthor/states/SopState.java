@@ -69,7 +69,7 @@ public class SopState implements LinearState {
 
     @CordaSerializable
     public enum Status {
-        SOP_IN_PROGRESS, SOP_COMPLETED
+        SOP_IN_PROGRESS, SOP_COMPLITED
     }
 
     // Returns the party of the current player
@@ -102,7 +102,7 @@ public class SopState implements LinearState {
             newborad[pos.getFirst()][pos.getSecond()] = 'O';
         }
         if(SopContract.SopUtils.isSopCompleted(newborad)){
-            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn,this.linearId, newborad, Status.SOP_COMPLETED);
+            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn,this.linearId, newborad, Status.SOP_COMPLITED);
             return b;
         }else{
             SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn, this.linearId, newborad, Status.SOP_IN_PROGRESS);
