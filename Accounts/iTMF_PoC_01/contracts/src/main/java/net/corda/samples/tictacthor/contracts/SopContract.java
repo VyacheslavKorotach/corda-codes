@@ -52,7 +52,7 @@ public class SopContract implements Contract {
 
     // Used to indicate the transaction's intent.
     public interface Commands extends CommandData {
-        //In our hello-world app, We will only have one command.
+        //In our hello-world app, We will only have one command
         class StartSop implements Commands {}
         class SubmitSubStep implements Commands {}
         class EndSop implements Commands {}
