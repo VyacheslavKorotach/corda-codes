@@ -66,10 +66,12 @@ public class SubmitSubStepFlow extends FlowLogic<String> {
     private UniqueIdentifier sopId;
     private int x;
     private int y;
-    private String regulator;
+//    private String regulator;
+    private final Party regulator;
 
     //public constructor
-    public SubmitSubStepFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int x, int y, String regulator){
+//    public SubmitSubStepFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int x, int y, String regulator){
+    public SubmitSubStepFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int x, int y, Party regulator){
         this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
@@ -90,7 +92,7 @@ public class SubmitSubStepFlow extends FlowLogic<String> {
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
-        AccountInfo regulatorAccount = accountService.accountInfo(regulator).get(0).getState().getData();
+//        AccountInfo regulatorAccount = accountService.accountInfo(regulator).get(0).getState().getData();
 
         //retrieve the sop state
         QueryCriteria.LinearStateQueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria()
@@ -141,7 +143,8 @@ public class SubmitSubStepFlow extends FlowLogic<String> {
         subFlow(new SyncSop(outputSopState.getLinearId().toString(),targetAccount.getHost()));
 
         // We also distribute the transaction to the national regulator manually.
-        subFlow(new ReportManually(signedByCounterParty, regulatorAccount.getHost()));
+//        subFlow(new ReportManually(signedByCounterParty, regulatorAccount.getHost()));
+        subFlow(new ReportManually(signedByCounterParty, regulator);
 
         return "rxId: "+stx.getId();
     }
