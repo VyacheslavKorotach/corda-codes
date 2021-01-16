@@ -15,10 +15,10 @@ import java.util.*;
 
 @StartableByRPC
 @StartableByService
-public class myGame extends FlowLogic<SopState>{
+public class mySop extends FlowLogic<SopState>{
 
     private String whoAmI;
-    public myGame(String whoAmI) {
+    public mySop(String whoAmI) {
         this.whoAmI = whoAmI;
     }
 

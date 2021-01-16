@@ -4,7 +4,7 @@ package net.corda.samples.tictacthor.webserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.corda.samples.tictacthor.accountUtilities.CreateNewAccount;
 import net.corda.samples.tictacthor.accountUtilities.ShareAccountTo;
-import net.corda.samples.tictacthor.accountUtilities.myGame;
+import net.corda.samples.tictacthor.accountUtilities.mySop;
 import net.corda.samples.tictacthor.flows.EndSopFlow;
 import net.corda.samples.tictacthor.flows.StartSopFlow;
 import net.corda.samples.tictacthor.flows.SubmitTurnFlow;
@@ -189,7 +189,7 @@ public class Controller {
             x=2;y=2;
         }
         try{
-            UniqueIdentifier gameId = proxy.startTrackedFlowDynamic(myGame.class,whoAmI).getReturnValue().get().getLinearId();
+            UniqueIdentifier gameId = proxy.startTrackedFlowDynamic(mySop.class,whoAmI).getReturnValue().get().getLinearId();
             String submitTurn = proxy.startTrackedFlowDynamic(SubmitTurnFlow.class, gameId, whoAmI,competeWith,x,y).getReturnValue().get();
 
             if(isGameOver(whoAmI)){
@@ -209,7 +209,7 @@ public class Controller {
         //If the game is over, the Status should be a null variable
         //So if the status returned is GAME_IN_PROGRESS, it means the game is not over.
         try{
-            SopState.Status gameStatus = proxy.startTrackedFlowDynamic(myGame.class,whoAmI).getReturnValue().get().getStatus();
+            SopState.Status gameStatus = proxy.startTrackedFlowDynamic(mySop.class,whoAmI).getReturnValue().get().getStatus();
             return gameStatus != SopState.Status.SOP_IN_PROGRESS;
         }catch (Exception e) {
             throw new IllegalArgumentException("No board");
