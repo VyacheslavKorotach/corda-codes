@@ -27,7 +27,7 @@ public class SopState implements LinearState {
     private UniqueIdentifier patient;
     private AnonymousParty me;
     private AnonymousParty counterparty;
-    private boolean isPlayerXTurn;
+    private boolean isPatientTurn;
     private char[][] sop;
     private UniqueIdentifier linearId;
     private Status status;
@@ -40,7 +40,7 @@ public class SopState implements LinearState {
         this.counterparty = counterparty;
 
         //fixed
-        this.isPlayerXTurn = false;
+        this.isPatientTurn = false;
         this.sop = new char[][]{{'E','E','E'},{'E','E','E'},{'E','E','E'}};
         this.linearId = new UniqueIdentifier();
         this.status = Status.SOP_IN_PROGRESS;
@@ -49,13 +49,13 @@ public class SopState implements LinearState {
     @ConstructorForDeserialization
     public SopState(UniqueIdentifier paramedic, UniqueIdentifier patient,
                     AnonymousParty me, AnonymousParty counterparty,
-                    boolean isPlayerXTurn, UniqueIdentifier linearId,
+                    boolean isPatientTurn, UniqueIdentifier linearId,
                     char[][] sop, Status status) {
         this.paramedic = paramedic;
         this.patient = patient;
         this.me = me;
         this.counterparty = counterparty;
-        this.isPlayerXTurn = isPlayerXTurn;
+        this.isPatientTurn = isPatientTurn;
         this.linearId = linearId;
         this.sop = sop;
         this.status = status;
@@ -70,12 +70,12 @@ public class SopState implements LinearState {
 
     @CordaSerializable
     public enum Status {
-        SOP_IN_PROGRESS, SOP_COMPLITED
+        SOP_IN_PROGRESS, SOP_COMPLETED
     }
 
     // Returns the party of the current player
     public UniqueIdentifier getCurrentPlayerParty(){
-        if(isPlayerXTurn){
+        if(isPatientTurn){
             return patient;
         }else{
             return paramedic;
@@ -97,16 +97,16 @@ public class SopState implements LinearState {
             throw new IllegalStateException("Invalid board index.");
         }
         char[][] newborad = this.deepCopy();
-        if(isPlayerXTurn){
+        if(isPatientTurn){
             newborad[pos.getFirst()][pos.getSecond()] = 'X';
         }else{
             newborad[pos.getFirst()][pos.getSecond()] = 'O';
         }
         if(SopContract.SopUtils.isGameOver(newborad)){
-            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn,this.linearId, newborad,Status.SOP_COMPLITED);
+            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn,this.linearId, newborad,Status.SOP_COMPLETED);
             return b;
         }else{
-            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPlayerXTurn, this.linearId, newborad,Status.SOP_IN_PROGRESS);
+            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn, this.linearId, newborad,Status.SOP_IN_PROGRESS);
             return b;
         }
     }
@@ -129,8 +129,8 @@ public class SopState implements LinearState {
         return counterparty;
     }
 
-    public boolean isPlayerXTurn() {
-        return isPlayerXTurn;
+    public boolean isPatientTurn() {
+        return isPatientTurn;
     }
 
     public char[][] getSop() {
@@ -157,8 +157,8 @@ public class SopState implements LinearState {
         this.counterparty = counterparty;
     }
 
-    public void setPlayerXTurn(boolean playerXTurn) {
-        isPlayerXTurn = playerXTurn;
+    public void setPatientTurn(boolean patientTurn) {
+        isPatientTurn = patientTurn;
     }
 
     public void setSop(char[][] sop) {
