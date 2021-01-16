@@ -67,8 +67,8 @@ public class SubmitTurnFlow extends FlowLogic<String> {
     private int y;
 
     //public constructor
-    public SubmitTurnFlow(UniqueIdentifier gameId, String whoAmI, String whereTo, int x, int y){
-        this.sopId = gameId;
+    public SubmitTurnFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int x, int y){
+        this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
         this.x = x;
