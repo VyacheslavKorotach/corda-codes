@@ -59,7 +59,7 @@ public class SopContract implements Contract {
     }
 
     public static class SopUtils {
-        public static Boolean isSOPOver(char[][] board){
+        public static Boolean isGameOver(char[][] board){
             return (board[0][0] == board [0][1] && board[0][0] == board [0][2] && (board[0][0] == 'X' || board[0][0] == 'O')) ||
                     (board[0][0] == board [1][1] && board[0][0] == board [2][2]&& (board[0][0] == 'X' || board[0][0] == 'O')) ||
                     (board[0][0] == board [1][0] && board[0][0] == board [2][0]&& (board[0][0] == 'X' || board[0][0] == 'O')) ||
