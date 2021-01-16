@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.corda.core.node.StatesToRecord;
+
 // ******************
 // * Initiator flow *
 // ******************
@@ -165,7 +167,7 @@ class SubmitSubStepFlowResponder extends FlowLogic<Void> {
                 // Custom Logic to validate transaction.
             }
         });
-        subFlow(new ReceiveFinalityFlow(counterpartySession));
+        subFlow(new ReceiveFinalityFlow(counterpartySession, null, StatesToRecord.ALL_VISIBLE));
         return null;
     }
 }
