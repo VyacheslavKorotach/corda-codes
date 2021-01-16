@@ -59,11 +59,13 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
     //private variables
     private String whoAmI ;
     private String whereTo;
+    private String regulator;
 
     //public constructor
-    public StartSopFlow(String whoAmI, String whereTo){
+    public StartSopFlow(String whoAmI, String whereTo, String regulator){
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
+        this.regulator = regulator;
     }
 
     @Suspendable
@@ -77,6 +79,8 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
 
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
+
+        AccountInfo regulatorAccount = accountService.accountInfo(regulator).get(0).getState().getData();
 
         //check if this account is in another sop
         QueryCriteria.VaultQueryCriteria criteria = new QueryCriteria.VaultQueryCriteria().withExternalIds(Arrays.asList(myAccount.getIdentifier().getId()));
@@ -120,6 +124,10 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
         //Finalize
         subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
+
+        // We also distribute the transaction to the national regulator manually.
+        subFlow(new ReportManually(signedByCounterParty, regulatorAccount.getHost()));
+
         return initialSopState.getLinearId();
     }
 }
