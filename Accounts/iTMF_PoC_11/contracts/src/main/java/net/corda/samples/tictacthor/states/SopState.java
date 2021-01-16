@@ -28,7 +28,7 @@ public class SopState implements LinearState {
     private AnonymousParty me;
     private AnonymousParty counterparty;
     private boolean isPlayerXTurn;
-    private char[][] sopStep;
+    private char[][] sop;
     private UniqueIdentifier linearId;
     private Status status;
 
@@ -41,7 +41,7 @@ public class SopState implements LinearState {
 
         //fixed
         this.isPlayerXTurn = false;
-        this.sopStep = new char[][]{{'E','E','E'},{'E','E','E'},{'E','E','E'}};
+        this.sop = new char[][]{{'E','E','E'},{'E','E','E'},{'E','E','E'}};
         this.linearId = new UniqueIdentifier();
         this.status = Status.SOP_IN_PROGRESS;
     }
@@ -50,14 +50,14 @@ public class SopState implements LinearState {
     public SopState(UniqueIdentifier paramedic, UniqueIdentifier patient,
                     AnonymousParty me, AnonymousParty counterparty,
                     boolean isPlayerXTurn, UniqueIdentifier linearId,
-                    char[][] sopStep, Status status) {
+                    char[][] sop, Status status) {
         this.paramedic = paramedic;
         this.patient = patient;
         this.me = me;
         this.counterparty = counterparty;
         this.isPlayerXTurn = isPlayerXTurn;
         this.linearId = linearId;
-        this.sopStep = sopStep;
+        this.sop = sop;
         this.status = status;
     }
 
@@ -84,9 +84,9 @@ public class SopState implements LinearState {
 
     public char[][] deepCopy(){
         char[][] newboard = new char[3][3];
-        for(int i = 0; i<this.sopStep.length; i++) {
-            for (int j = 0; j < this.sopStep[i].length; j++) {
-                newboard[i][j] = this.sopStep[i][j];
+        for(int i = 0; i<this.sop.length; i++) {
+            for (int j = 0; j < this.sop[i].length; j++) {
+                newboard[i][j] = this.sop[i][j];
             }
         }
         return newboard;
@@ -133,8 +133,8 @@ public class SopState implements LinearState {
         return isPlayerXTurn;
     }
 
-    public char[][] getSopStep() {
-        return sopStep;
+    public char[][] getSop() {
+        return sop;
     }
 
     public Status getStatus() {
@@ -161,8 +161,8 @@ public class SopState implements LinearState {
         isPlayerXTurn = playerXTurn;
     }
 
-    public void setSopStep(char[][] sopStep) {
-        this.sopStep = sopStep;
+    public void setSop(char[][] sop) {
+        this.sop = sop;
     }
 
     public void setLinearId(UniqueIdentifier linearId) {
