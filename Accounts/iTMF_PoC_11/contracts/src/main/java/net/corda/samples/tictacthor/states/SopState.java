@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-// *********
+// **********
 // * State *
 // *********
 @BelongsToContract(SopContract.class)
