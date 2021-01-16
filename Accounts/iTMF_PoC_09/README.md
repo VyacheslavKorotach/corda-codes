@@ -32,7 +32,7 @@ From here, you can start play the game by changing the very last number from the
 │6│7│8│                  │ │ │ │
 ```
 The Game will automatically end when one player wins the game. 
-You can also run `run vaultQuery contractStateType: net.corda.samples.tictacthor.states.BoardState` at any given time to see the board games stored in vault. 
+You can also run `run vaultQuery contractStateType: net.corda.samples.tictacthor.states.SopState` at any given time to see the board games stored in vault. 
 
 now if you want to fast forward the game, Play the following moves in order:
 According to syntax: we should have `http://localhost:8080/submitMove/PeterLi/DavidWinner/3` for the first move below.
