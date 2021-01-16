@@ -144,7 +144,7 @@ public class SubmitSubStepFlow extends FlowLogic<String> {
 
         // We also distribute the transaction to the national regulator manually.
 //        subFlow(new ReportManually(signedByCounterParty, regulatorAccount.getHost()));
-        subFlow(new ReportManually(signedByCounterParty, regulator);
+        subFlow(new ReportManually(signedByCounterParty, regulator));
 
         return "rxId: "+stx.getId();
     }
