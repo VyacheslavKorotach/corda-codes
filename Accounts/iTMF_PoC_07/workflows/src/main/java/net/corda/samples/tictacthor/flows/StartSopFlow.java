@@ -9,15 +9,12 @@ import com.sun.istack.NotNull;
 import net.corda.samples.tictacthor.accountUtilities.NewKeyForAccount;
 import net.corda.samples.tictacthor.contracts.SopContract;
 import net.corda.samples.tictacthor.states.SopState;
-//import javafx.util.Pair;
-import kotlin.Pair;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.crypto.TransactionSignature;
 import net.corda.core.flows.*;
 import net.corda.core.identity.AnonymousParty;
 import net.corda.core.identity.Party;
-import net.corda.core.node.services.Vault;
 import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
@@ -33,7 +30,7 @@ import java.util.stream.Collectors;
 // ******************
 @InitiatingFlow
 @StartableByRPC
-public class SubmitTurnFlow extends FlowLogic<String> {
+public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
 
     private final ProgressTracker progressTracker = tracker();
 
@@ -62,22 +59,16 @@ public class SubmitTurnFlow extends FlowLogic<String> {
     //private variables
     private String whoAmI ;
     private String whereTo;
-    private UniqueIdentifier sopId;
-    private int x;
-    private int y;
 
     //public constructor
-    public SubmitTurnFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int x, int y){
-        this.sopId = sopId;
+    public StartSopFlow(String whoAmI, String whereTo){
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
-        this.x = x;
-        this.y = y;
     }
 
     @Suspendable
     @Override
-    public String call() throws FlowException {
+    public UniqueIdentifier call() throws FlowException {
         //grab account service
         AccountService accountService = getServiceHub().cordaService(KeyManagementBackedAccountService.class);
         //grab the account information
@@ -87,23 +78,19 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
-        //retrieve the game board
-        QueryCriteria.LinearStateQueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria()
-                .withUuid(Arrays.asList(sopId.getId())).withStatus(Vault.StateStatus.UNCONSUMED);
-        StateAndRef<SopState> inputBoardStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
-        if(inputBoardStateAndRef == null){
-            throw new IllegalArgumentException("You are in another SOP");
-        }
-        SopState inputSopState = inputBoardStateAndRef.getState().getData();
-
-        //check turns
-        if (!inputSopState.getCurrentPlayerParty().toString().equals(myAccount.getIdentifier().toString())){
-            throw new IllegalArgumentException("It's not your turn! "+ inputSopState.getCurrentPlayerParty() + " my account: "+myAccount.getIdentifier());
+        //check if this account is in another game
+        QueryCriteria.VaultQueryCriteria criteria = new QueryCriteria.VaultQueryCriteria().withExternalIds(Arrays.asList(myAccount.getIdentifier().getId()));
+        List<StateAndRef<SopState>> results = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates();
+        if(results.size() != 0){
+            throw new IllegalArgumentException("You are in another game");
         }
 
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
         //generating State for transfer
-        SopState outputSopState = inputSopState.returnNewSopAfterMove(new Pair<>(x,y),new AnonymousParty(myKey), targetAcctAnonymousParty);
+        SopState initialSopState = new SopState(myAccount.getIdentifier(),
+                targetAccount.getIdentifier(),
+                new AnonymousParty(myKey),
+                targetAcctAnonymousParty);
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -115,9 +102,9 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         // final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB")); // METHOD 2
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
-                .addInputState(inputBoardStateAndRef)
-                .addOutputState(outputSopState)
-                .addCommand(new SopContract.Commands.SubmitTurn(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
+                .addOutputState(initialSopState)
+                .addCommand(new SopContract.Commands.StartGame(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
+
 
         progressTracker.setCurrentStep(SIGNING_TRANSACTION);
         //self verify and sign Transaction
@@ -131,21 +118,20 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         SignedTransaction signedByCounterParty = locallySignedTx.withAdditionalSignatures(accountToMoveToSignature);
         progressTracker.setCurrentStep(FINALISING_TRANSACTION);
         //Finalize
-        SignedTransaction stx = subFlow(new FinalityFlow(signedByCounterParty,
+        subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
-        subFlow(new SyncSop(outputSopState.getLinearId().toString(),targetAccount.getHost()));
-        return "rxId: "+stx.getId();
+        return initialSopState.getLinearId();
     }
 }
 
 
-@InitiatedBy(SubmitTurnFlow.class)
-class SubmitTurnFlowResponder extends FlowLogic<Void> {
+@InitiatedBy(StartSopFlow.class)
+class StartSopFlowResponder extends FlowLogic<Void> {
     //private variable
     private FlowSession counterpartySession;
 
     //Constructor
-    public SubmitTurnFlowResponder(FlowSession counterpartySession) {
+    public StartSopFlowResponder(FlowSession counterpartySession) {
         this.counterpartySession = counterpartySession;
     }
 

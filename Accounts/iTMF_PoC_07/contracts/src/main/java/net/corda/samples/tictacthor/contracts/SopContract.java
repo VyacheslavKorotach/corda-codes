@@ -37,21 +37,12 @@ public class SopContract implements Contract {
                 SopState output = (SopState) outputs.get(0);
                 require.using("Output board must have status SOP_IN_PROGRESS", output.getStatus() == SopState.Status.SOP_IN_PROGRESS);
                 require.using("You cannot play a game with yourself.", output.getParamedic() != output.getPatient());
-                require.using("First Sub Step (sop) must be equal 0.", output.getSop() == 0);
                 return null;
             });
 
         } else if (command.getValue() instanceof SopContract.Commands.SubmitTurn){
-            requireThat(require -> {
-                require.using("Transaction must have exactly one input.", inputs.size() == 1);
-                require.using("Transaction must have exactly one output.", outputs.size() == 1);
-                SopState input = (SopState) inputs.get(0);
-                SopState output = (SopState) outputs.get(0);
-                require.using("Input must have status SOP_IN_PROGRESS", input.getStatus() == SopState.Status.SOP_IN_PROGRESS);
-                require.using("You cannot play a game with yourself.", input.getSop() == output.getSop() + 1 || output.getSop() == 4);
-                return null;
-            });
-        }else if (command.getValue() instanceof Commands.EndSop){
+
+        }else if (command.getValue() instanceof SopContract.Commands.EndGame){
 
         }else{
             throw new IllegalArgumentException("Command not found!");
@@ -64,12 +55,19 @@ public class SopContract implements Contract {
         //In our hello-world app, We will only have one command.
         class StartGame implements Commands {}
         class SubmitTurn implements Commands {}
-        class EndSop implements Commands {}
+        class EndGame implements Commands {}
     }
 
     public static class SopUtils {
-        public static Boolean isSOPOver(int sop){
-            return sop == 4;
+        public static Boolean isSOPOver(char[][] board){
+            return (board[0][0] == board [0][1] && board[0][0] == board [0][2] && (board[0][0] == 'X' || board[0][0] == 'O')) ||
+                    (board[0][0] == board [1][1] && board[0][0] == board [2][2]&& (board[0][0] == 'X' || board[0][0] == 'O')) ||
+                    (board[0][0] == board [1][0] && board[0][0] == board [2][0]&& (board[0][0] == 'X' || board[0][0] == 'O')) ||
+                    (board[2][0] == board [2][1] && board[2][0] == board [2][2]&& (board[2][0] == 'X' || board[2][0] == 'O')) ||
+                    (board[2][0] == board [1][1] && board[0][0] == board [0][2]&& (board[2][0] == 'X' || board[2][0] == 'O')) ||
+                    (board[0][2] == board [1][2] && board[0][2] == board [2][2]&& (board[0][2] == 'X' || board[0][2] == 'O')) ||
+                    (board[0][1] == board [1][1] && board[0][1] == board [2][1]&& (board[0][1] == 'X' || board[0][1] == 'O')) ||
+                    (board[1][0] == board [1][1] && board[1][0] == board [1][2]&& (board[1][0] == 'X' || board[1][0] == 'O'));
         }
 
     }

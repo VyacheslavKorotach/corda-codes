@@ -104,7 +104,7 @@ public class EndSopFlow extends FlowLogic<String> {
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
                 .addInputState(inputBoardStateAndRef)
-                .addCommand(new SopContract.Commands.EndGame(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
+                .addCommand(new SopContract.Commands.EndSop(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
 
 
         progressTracker.setCurrentStep(SIGNING_TRANSACTION);

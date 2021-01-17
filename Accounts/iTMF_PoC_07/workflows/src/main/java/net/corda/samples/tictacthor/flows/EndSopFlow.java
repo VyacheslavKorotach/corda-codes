@@ -9,8 +9,6 @@ import com.sun.istack.NotNull;
 import net.corda.samples.tictacthor.accountUtilities.NewKeyForAccount;
 import net.corda.samples.tictacthor.contracts.SopContract;
 import net.corda.samples.tictacthor.states.SopState;
-//import javafx.util.Pair;
-import kotlin.Pair;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.crypto.TransactionSignature;
@@ -33,7 +31,7 @@ import java.util.stream.Collectors;
 // ******************
 @InitiatingFlow
 @StartableByRPC
-public class SubmitTurnFlow extends FlowLogic<String> {
+public class EndSopFlow extends FlowLogic<String> {
 
     private final ProgressTracker progressTracker = tracker();
 
@@ -63,16 +61,13 @@ public class SubmitTurnFlow extends FlowLogic<String> {
     private String whoAmI ;
     private String whereTo;
     private UniqueIdentifier sopId;
-    private int x;
-    private int y;
+
 
     //public constructor
-    public SubmitTurnFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int x, int y){
+    public EndSopFlow(UniqueIdentifier sopId, String whoAmI, String whereTo){
         this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
-        this.x = x;
-        this.y = y;
     }
 
     @Suspendable
@@ -92,18 +87,11 @@ public class SubmitTurnFlow extends FlowLogic<String> {
                 .withUuid(Arrays.asList(sopId.getId())).withStatus(Vault.StateStatus.UNCONSUMED);
         StateAndRef<SopState> inputBoardStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
         if(inputBoardStateAndRef == null){
-            throw new IllegalArgumentException("You are in another SOP");
-        }
-        SopState inputSopState = inputBoardStateAndRef.getState().getData();
-
-        //check turns
-        if (!inputSopState.getCurrentPlayerParty().toString().equals(myAccount.getIdentifier().toString())){
-            throw new IllegalArgumentException("It's not your turn! "+ inputSopState.getCurrentPlayerParty() + " my account: "+myAccount.getIdentifier());
+            throw new IllegalArgumentException("You are in another game");
         }
 
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
         //generating State for transfer
-        SopState outputSopState = inputSopState.returnNewSopAfterMove(new Pair<>(x,y),new AnonymousParty(myKey), targetAcctAnonymousParty);
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -116,8 +104,8 @@ public class SubmitTurnFlow extends FlowLogic<String> {
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
                 .addInputState(inputBoardStateAndRef)
-                .addOutputState(outputSopState)
-                .addCommand(new SopContract.Commands.SubmitTurn(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
+                .addCommand(new SopContract.Commands.EndGame(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
+
 
         progressTracker.setCurrentStep(SIGNING_TRANSACTION);
         //self verify and sign Transaction
@@ -131,21 +119,24 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         SignedTransaction signedByCounterParty = locallySignedTx.withAdditionalSignatures(accountToMoveToSignature);
         progressTracker.setCurrentStep(FINALISING_TRANSACTION);
         //Finalize
-        SignedTransaction stx = subFlow(new FinalityFlow(signedByCounterParty,
+        subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
-        subFlow(new SyncSop(outputSopState.getLinearId().toString(),targetAccount.getHost()));
-        return "rxId: "+stx.getId();
+
+        // We also distribute the transaction to the national regulator manually.
+//        subFlow(new ReportManually(signedByCounterParty, nationalRegulator));
+
+        return "SOP Completed";
     }
 }
 
 
-@InitiatedBy(SubmitTurnFlow.class)
-class SubmitTurnFlowResponder extends FlowLogic<Void> {
+@InitiatedBy(EndSopFlow.class)
+class EndSopFlowResponder extends FlowLogic<Void> {
     //private variable
     private FlowSession counterpartySession;
 
     //Constructor
-    public SubmitTurnFlowResponder(FlowSession counterpartySession) {
+    public EndSopFlowResponder(FlowSession counterpartySession) {
         this.counterpartySession = counterpartySession;
     }
 
