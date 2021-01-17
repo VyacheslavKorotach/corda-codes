@@ -96,7 +96,6 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
         initialSopState.setPatientName(whereTo);
         initialSopState.setSopID("Temperature measurement");
         initialSopState.setSop(0);
-//        initialSopState.setSubStepDescription("The Paramedic chose the Patient and started the SOP");
         initialSopState.setTemperatureValue(0);
 
         // Obtain a reference to a notary we wish to use.

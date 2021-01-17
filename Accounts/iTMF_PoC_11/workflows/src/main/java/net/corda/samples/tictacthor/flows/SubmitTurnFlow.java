@@ -102,6 +102,7 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
         //generating State for transfer
         SopState outputSopState = inputSopState.returnNewSopAfterMove(sop,new AnonymousParty(myKey), targetAcctAnonymousParty);
+//        outputSopState.setSop(sop);
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*

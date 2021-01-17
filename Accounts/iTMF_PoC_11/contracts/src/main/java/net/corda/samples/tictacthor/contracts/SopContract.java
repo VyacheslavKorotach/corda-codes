@@ -74,7 +74,7 @@ public class SopContract implements Contract {
 
     public static class SopUtils {
         public static Boolean isSOPOver(int sop){
-            return sop == 4;
+            return sop == 3 || sop == 4;
         }
 
     }

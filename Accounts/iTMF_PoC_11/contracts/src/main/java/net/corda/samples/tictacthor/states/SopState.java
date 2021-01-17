@@ -109,22 +109,18 @@ public class SopState implements LinearState {
         }
     }
 
-//    public int deepCopy(){
-//        int newbsop = this.sop;
-//        return newbsop;
-//    }
-
-    public SopState returnNewSopAfterMove(Integer pos, AnonymousParty me, AnonymousParty competitor){
-//        int newsop = this.deepCopy();
-        int newsop = pos;
+    public SopState returnNewSopAfterMove(Integer subStep, AnonymousParty me, AnonymousParty competitor){
+        int newsop = subStep;
         if(isPatientTurn){
         }else{
         }
         if(SopContract.SopUtils.isSOPOver(newsop)){
             SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn,this.linearId, newsop,Status.SOP_COMPLETED, this.sopID, this.paramedicName, this.patientName, this.subStepDescription, this.temperatureValue);
+            b.subStepDescription = subSteps[subStep];
             return b;
         }else{
             SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn, this.linearId, newsop,Status.SOP_IN_PROGRESS, this.sopID, this.paramedicName, this.patientName, this.subStepDescription, this.temperatureValue);
+            b.subStepDescription = subSteps[subStep];
             return b;
         }
     }
@@ -191,7 +187,7 @@ public class SopState implements LinearState {
 
     public void setSop(int sop) {
         this.sop = sop;
-        this.subStepDescription = this.subSteps[sop];
+        this.subStepDescription = subSteps[sop];
     }
 
     public void setLinearId(UniqueIdentifier linearId) {
