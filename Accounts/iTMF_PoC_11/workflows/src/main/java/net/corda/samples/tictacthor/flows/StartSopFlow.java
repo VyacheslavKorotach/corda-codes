@@ -92,6 +92,13 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
                 new AnonymousParty(myKey),
                 targetAcctAnonymousParty);
 
+        initialSopState.setParamedicName(whoAmI);
+        initialSopState.setPatientName(whereTo);
+        initialSopState.setSopID("Temperature measurement");
+        initialSopState.setSop(0);
+//        initialSopState.setSubStepDescription("The Paramedic chose the Patient and started the SOP");
+        initialSopState.setTemperatureValue(0);
+
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
          *  METHOD 2: Explicit selection of notary by CordaX500Name - argument can by coded in flow or parsed from config (Preferred)
@@ -103,7 +110,7 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
                 .addOutputState(initialSopState)
-                .addCommand(new SopContract.Commands.StartGame(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
+                .addCommand(new SopContract.Commands.StartSop(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
 
 
         progressTracker.setCurrentStep(SIGNING_TRANSACTION);

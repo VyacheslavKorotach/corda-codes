@@ -17,11 +17,11 @@ import java.util.*;
 @StartableByRPC
 @StartableByService
 public class SyncSop extends FlowLogic<String>{
-    private String gameId;
+    private String sopId;
     private Party party;
 
-    public SyncSop(String gameId, Party party) {
-        this.gameId = gameId;
+    public SyncSop(String sopId, Party party) {
+        this.sopId = sopId;
         this.party = party;
     }
 
@@ -29,7 +29,7 @@ public class SyncSop extends FlowLogic<String>{
     @Suspendable
     public String call() throws FlowException {
 
-        UUID id = UUID.fromString(gameId);
+        UUID id = UUID.fromString(sopId);
         QueryCriteria.LinearStateQueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria()
                 .withUuid(Arrays.asList(id)).withStatus(Vault.StateStatus.UNCONSUMED);
         try {
@@ -37,8 +37,8 @@ public class SyncSop extends FlowLogic<String>{
             subFlow(new ShareStateAndSyncAccounts(inputBoardStateAndRef,party));
 
         }catch (Exception e){
-            throw new FlowException("GameState with id "+gameId+" not found.");
+            throw new FlowException("SopState with id "+ sopId +" not found.");
         }
-        return "Game synced";
+        return "Sop synced";
     }
 }

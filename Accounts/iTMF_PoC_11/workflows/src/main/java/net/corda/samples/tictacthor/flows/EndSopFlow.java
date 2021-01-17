@@ -82,12 +82,12 @@ public class EndSopFlow extends FlowLogic<String> {
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
-        //retrieve the game board
+        //retrieve the sop
         QueryCriteria.LinearStateQueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria()
                 .withUuid(Arrays.asList(sopId.getId())).withStatus(Vault.StateStatus.UNCONSUMED);
-        StateAndRef<SopState> inputBoardStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
-        if(inputBoardStateAndRef == null){
-            throw new IllegalArgumentException("You are in another game");
+        StateAndRef<SopState> inputSopStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
+        if(inputSopStateAndRef == null){
+            throw new IllegalArgumentException("You are in another SOP");
         }
 
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
@@ -103,7 +103,7 @@ public class EndSopFlow extends FlowLogic<String> {
         // final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB")); // METHOD 2
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
-                .addInputState(inputBoardStateAndRef)
+                .addInputState(inputSopStateAndRef)
                 .addCommand(new SopContract.Commands.EndSop(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
 
 

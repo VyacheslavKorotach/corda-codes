@@ -25,12 +25,12 @@ public class ContractTests {
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.output(SopContract.ID, tokenfail);
-                tx.command(Operator.getPublicKey(), new SopContract.Commands.StartGame()); // Wrong type.
+                tx.command(Operator.getPublicKey(), new SopContract.Commands.StartSop()); // Wrong type.
                 return tx.fails();
             });
             l.transaction(tx -> {
                 tx.output(SopContract.ID, tokenPass);
-                tx.command(Operator.getPublicKey(), new SopContract.Commands.StartGame()); // Wrong type.
+                tx.command(Operator.getPublicKey(), new SopContract.Commands.StartSop()); // Wrong type.
                 return tx.verifies();
             });
             return null;

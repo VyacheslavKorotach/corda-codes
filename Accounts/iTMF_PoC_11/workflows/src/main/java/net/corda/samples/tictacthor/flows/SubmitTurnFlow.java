@@ -63,16 +63,14 @@ public class SubmitTurnFlow extends FlowLogic<String> {
     private String whoAmI ;
     private String whereTo;
     private UniqueIdentifier sopId;
-    private int x;
-    private int y;
+    private int sop;
 
     //public constructor
-    public SubmitTurnFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int x, int y){
+    public SubmitTurnFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int sop){
         this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
-        this.x = x;
-        this.y = y;
+        this.sop = sop;
     }
 
     @Suspendable
@@ -90,11 +88,11 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         //retrieve the game board
         QueryCriteria.LinearStateQueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria()
                 .withUuid(Arrays.asList(sopId.getId())).withStatus(Vault.StateStatus.UNCONSUMED);
-        StateAndRef<SopState> inputBoardStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
-        if(inputBoardStateAndRef == null){
+        StateAndRef<SopState> inputSopStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
+        if(inputSopStateAndRef == null){
             throw new IllegalArgumentException("You are in another SOP");
         }
-        SopState inputSopState = inputBoardStateAndRef.getState().getData();
+        SopState inputSopState = inputSopStateAndRef.getState().getData();
 
         //check turns
         if (!inputSopState.getCurrentPlayerParty().toString().equals(myAccount.getIdentifier().toString())){
@@ -103,7 +101,7 @@ public class SubmitTurnFlow extends FlowLogic<String> {
 
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
         //generating State for transfer
-        SopState outputSopState = inputSopState.returnNewSopAfterMove(new Pair<>(x,y),new AnonymousParty(myKey), targetAcctAnonymousParty);
+        SopState outputSopState = inputSopState.returnNewSopAfterMove(sop,new AnonymousParty(myKey), targetAcctAnonymousParty);
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -115,7 +113,7 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         // final Party notary = getServiceHub().getNetworkMapCache().getNotary(CordaX500Name.parse("O=Notary,L=London,C=GB")); // METHOD 2
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
-                .addInputState(inputBoardStateAndRef)
+                .addInputState(inputSopStateAndRef)
                 .addOutputState(outputSopState)
                 .addCommand(new SopContract.Commands.SubmitTurn(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
 

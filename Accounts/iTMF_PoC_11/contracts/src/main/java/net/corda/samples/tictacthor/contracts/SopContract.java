@@ -28,7 +28,7 @@ public class SopContract implements Contract {
         List<ContractState> inputs = tx.getInputStates();
         List<ContractState> outputs = tx.getOutputStates();
 
-        if (command.getValue() instanceof SopContract.Commands.StartGame) {
+        if (command.getValue() instanceof Commands.StartSop) {
 
             // Using Corda DSL function requireThat to replicate conditions-checks
             requireThat(require -> {
@@ -36,11 +36,10 @@ public class SopContract implements Contract {
                 require.using("Transaction must have exactly one output.", outputs.size() == 1);
                 SopState output = (SopState) outputs.get(0);
                 require.using("Output board must have status SOP_IN_PROGRESS", output.getStatus() == SopState.Status.SOP_IN_PROGRESS);
-                require.using("You cannot play a game with yourself.", output.getParamedic() != output.getPatient());
+                require.using("You cannot do a SOP to yourself.", output.getParamedic() != output.getPatient());
                 require.using("First Sub Step (sop) must be equal 0.", output.getSop() == 0);
                 return null;
             });
-
         } else if (command.getValue() instanceof SopContract.Commands.SubmitTurn){
             requireThat(require -> {
                 require.using("Transaction must have exactly one input.", inputs.size() == 1);
@@ -48,11 +47,17 @@ public class SopContract implements Contract {
                 SopState input = (SopState) inputs.get(0);
                 SopState output = (SopState) outputs.get(0);
                 require.using("Input must have status SOP_IN_PROGRESS", input.getStatus() == SopState.Status.SOP_IN_PROGRESS);
-                require.using("You cannot play a game with yourself.", input.getSop() == output.getSop() + 1 || output.getSop() == 4);
+                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", input.getSop() == output.getSop() + 1 || output.getSop() == 4);
                 return null;
             });
         }else if (command.getValue() instanceof Commands.EndSop){
-
+            requireThat(require -> {
+                SopState input = (SopState) inputs.get(0);
+                SopState output = (SopState) outputs.get(0);
+                require.using("Input must have status SOP_IN_PROGRESS", output.getStatus() == SopState.Status.SOP_COMPLETED);
+                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", input.getSop() == output.getSop() + 1 || output.getSop() == 4);
+                return null;
+            });
         }else{
             throw new IllegalArgumentException("Command not found!");
         }
@@ -61,8 +66,7 @@ public class SopContract implements Contract {
 
     // Used to indicate the transaction's intent.
     public interface Commands extends CommandData {
-        //In our hello-world app, We will only have one command.
-        class StartGame implements Commands {}
+        class StartSop implements Commands {}
         class SubmitTurn implements Commands {}
         class EndSop implements Commands {}
     }

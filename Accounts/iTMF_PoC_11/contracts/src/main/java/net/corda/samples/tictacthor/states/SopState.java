@@ -1,5 +1,6 @@
 package net.corda.samples.tictacthor.states;
 
+import net.corda.core.crypto.TransactionSignature;
 import net.corda.samples.tictacthor.contracts.SopContract;
 //import javafx.util.Pair;
 
@@ -12,6 +13,7 @@ import net.corda.core.serialization.ConstructorForDeserialization;
 import net.corda.core.serialization.CordaSerializable;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,9 +36,14 @@ public class SopState implements LinearState {
     private String sopID;
     private String paramedicName;
     private String patientName;
-    private int subStepN;
     private String subStepDescription;
     private float temperatureValue;
+    //SOP SubSteps
+    private String[] subSteps = {"The Paramedic chose the Patient and started the SOP",
+            "Patient confirmed the SOP with the Paramedic",
+            "Paramedic successfully measured the Patient temperature and put down the value",
+            "The Patient confirmed the value of the Temperature measurement. SOP is successfully finished",
+            "The SOP was canceled"};
 
     public SopState(UniqueIdentifier paramedic, UniqueIdentifier patient, AnonymousParty me, AnonymousParty counterparty) {
         //dynamic
@@ -53,10 +60,9 @@ public class SopState implements LinearState {
 
         //SOP parameters
         this.sopID = "Temperature measurement";
-        this.paramedicName = "harry";
-        this.patientName = "ron";
-        this.subStepN = 0;
-        this.subStepDescription = "The Paramedic chose the Patient and started the SOP";
+        this.paramedicName = "";
+        this.patientName = "";
+        this.subStepDescription = subSteps[0];
         this.temperatureValue = 0.0F;
     }
 
@@ -64,9 +70,9 @@ public class SopState implements LinearState {
     public SopState(UniqueIdentifier paramedic, UniqueIdentifier patient,
                     AnonymousParty me, AnonymousParty counterparty,
                     boolean isPatientTurn, UniqueIdentifier linearId,
-                    Integer sop, Status status,
+                    int sop, Status status,
                     String sopID, String paramedicName, String patientName,
-                    Integer subStepN, String subStepDescription, float temperatureValue) {
+                    String subStepDescription, float temperatureValue) {
         this.paramedic = paramedic;
         this.patient = patient;
         this.me = me;
@@ -78,7 +84,6 @@ public class SopState implements LinearState {
         this.sopID = sopID;
         this.paramedicName = paramedicName;
         this.patientName = patientName;
-        this.subStepN = subStepN;
         this.subStepDescription = subStepDescription;
         this.temperatureValue = temperatureValue;
     }
@@ -116,10 +121,10 @@ public class SopState implements LinearState {
         }else{
         }
         if(SopContract.SopUtils.isSOPOver(newsop)){
-            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn,this.linearId, newsop,Status.SOP_COMPLETED, this.sopID, this.paramedicName, this.patientName, this.subStepN, this.subStepDescription, this.temperatureValue);
+            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn,this.linearId, newsop,Status.SOP_COMPLETED, this.sopID, this.paramedicName, this.patientName, this.subStepDescription, this.temperatureValue);
             return b;
         }else{
-            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn, this.linearId, newsop,Status.SOP_IN_PROGRESS, this.sopID, this.paramedicName, this.patientName, this.subStepN, this.subStepDescription, this.temperatureValue);
+            SopState b = new SopState(this.paramedic,this.patient,me,competitor,!this.isPatientTurn, this.linearId, newsop,Status.SOP_IN_PROGRESS, this.sopID, this.paramedicName, this.patientName, this.subStepDescription, this.temperatureValue);
             return b;
         }
     }
@@ -160,8 +165,6 @@ public class SopState implements LinearState {
 
     public String getPatientName() { return patientName; }
 
-    public int getSubStepN() { return subStepN; }
-
     public String getSubStepDescription() { return subStepDescription; }
 
     public float getTemperatureValue(){ return temperatureValue;}
@@ -188,6 +191,7 @@ public class SopState implements LinearState {
 
     public void setSop(int sop) {
         this.sop = sop;
+        this.subStepDescription = this.subSteps[sop];
     }
 
     public void setLinearId(UniqueIdentifier linearId) {
@@ -203,8 +207,6 @@ public class SopState implements LinearState {
     public void setParamedicName(String paramedicName) { this.paramedicName = paramedicName; }
 
     public void setPatientName(String patientName) { this.patientName = patientName; }
-
-    public void setSubStepN(int subStepN) { this.subStepN = subStepN; }
 
     public void setSubStepDescription(String subStepDescription) { this.subStepDescription = subStepDescription; }
 
