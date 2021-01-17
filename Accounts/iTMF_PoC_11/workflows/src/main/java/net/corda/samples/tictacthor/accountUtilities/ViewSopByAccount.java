@@ -43,6 +43,9 @@ public class ViewSopByAccount extends FlowLogic<List<String>>{
         List<String> sopID = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates().stream().map(
                 it -> "\nSOP ID : " + it.getState().getData().getSopID()).collect(Collectors.toList());
 
+        List<String> sopNum = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates().stream().map(
+                it -> "\nSOP Num : " + it.getState().getData().getLinearId()).collect(Collectors.toList());
+
         List<String> SOPs = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates().stream().map(
                 it -> "\nSOP State : " + it.getState().getData().getSop()).collect(Collectors.toList());
 
@@ -52,6 +55,6 @@ public class ViewSopByAccount extends FlowLogic<List<String>>{
         List<String> Statuses = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates().stream().map(
                 it -> "\nSOP Status : " + it.getState().getData().getStatus()).collect(Collectors.toList());
 
-        return Stream.of(Paramedic, Patient, sopID, SOPs, SopStepDescriptions, Statuses).flatMap(Collection::stream).collect(Collectors.toList());
+        return Stream.of(Paramedic, Patient, sopID, sopNum, SOPs, SopStepDescriptions, Statuses).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }
