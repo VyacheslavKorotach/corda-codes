@@ -52,9 +52,12 @@ public class ViewSopByAccount extends FlowLogic<List<String>>{
         List<String> SopStepDescriptions = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates().stream().map(
                 it -> "\nSOP sub step : " + it.getState().getData().getSubStepDescription()).collect(Collectors.toList());
 
+        List<String> SopValue = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates().stream().map(
+                it -> "\nSOP temperature value : " + it.getState().getData().getTemperatureValue()).collect(Collectors.toList());
+
         List<String> Statuses = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates().stream().map(
                 it -> "\nSOP Status : " + it.getState().getData().getStatus()).collect(Collectors.toList());
 
-        return Stream.of(Paramedic, Patient, sopID, sopNum, SOPs, SopStepDescriptions, Statuses).flatMap(Collection::stream).collect(Collectors.toList());
+        return Stream.of(Paramedic, Patient, sopID, sopNum, SOPs, SopStepDescriptions, SopValue, Statuses).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }
