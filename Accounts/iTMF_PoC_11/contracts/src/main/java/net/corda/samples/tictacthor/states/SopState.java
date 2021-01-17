@@ -76,12 +76,12 @@ public class SopState implements LinearState {
         this.linearId = linearId;
         this.sop = sop;
         this.status = status;
-        this.sopID = "Temperature measurement";
-        this.paramedicName = "harry";
-        this.patientName = "ron";
-        this.subStepN = 0;
-        this.subStepDescription = "The Paramedic chose the Patient and started the SOP";
-        this.temperatureValue = 0.0F;
+        this.sopID = sopID;
+        this.paramedicName = paramedicName;
+        this.patientName = patientName;
+        this.subStepN = subStepN;
+        this.subStepDescription = subStepDescription;
+        this.temperatureValue = temperatureValue;
     }
 
     @NotNull @Override
@@ -171,13 +171,6 @@ public class SopState implements LinearState {
     public String getSubStepDescription() { return subStepDescription; }
     public float getTemperatureValue(){ return temperatureValue;}
 
-    public void setSopID(String sopID) { this.sopID = sopID; }
-    public void setParamedicName(String paramedicName) { this.paramedicName = paramedicName; }
-    public void setPatientName(String patientName) { this.patientName = patientName; }
-    public void setSubStepN(int subStepN) { this.subStepN = subStepN; }
-    public void setSubStepDescription(String subStepDescription) { this.subStepDescription = subStepDescription; }
-    public void setTemperatureValue(float temperatureValue) { this.temperatureValue = temperatureValue; }
-
     public void setParamedic(UniqueIdentifier paramedic) {
         this.paramedic = paramedic;
     }
@@ -210,5 +203,11 @@ public class SopState implements LinearState {
         this.status = status;
     }
 
+    public void setSopID(String sopID) { this.sopID = sopID; }
+    public void setParamedicName(String paramedicName) { this.paramedicName = paramedicName; }
+    public void setPatientName(String patientName) { this.patientName = patientName; }
+    public void setSubStepN(int subStepN) { this.subStepN = subStepN; }
+    public void setSubStepDescription(String subStepDescription) { this.subStepDescription = subStepDescription; }
+    public void setTemperatureValue(float temperatureValue) { this.temperatureValue = temperatureValue; }
 
 }
