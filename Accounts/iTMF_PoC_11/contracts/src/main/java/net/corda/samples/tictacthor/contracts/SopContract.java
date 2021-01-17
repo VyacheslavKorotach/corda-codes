@@ -47,7 +47,8 @@ public class SopContract implements Contract {
                 SopState input = (SopState) inputs.get(0);
                 SopState output = (SopState) outputs.get(0);
                 require.using("Input must have status SOP_IN_PROGRESS", input.getStatus() == SopState.Status.SOP_IN_PROGRESS);
-                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", output.getSop() == input.getSop() + 1 || output.getSop() == 4);
+                require.using("The range of possible SOP sub steps is (0 - 4)", output.getSop() >=0 && output.getSop() <= 4);
+                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", output.getSop() == input.getSop() + 1 || output.getSop() == 0 || output.getSop() == 4);
                 return null;
             });
         }else if (command.getValue() instanceof Commands.EndSop){
