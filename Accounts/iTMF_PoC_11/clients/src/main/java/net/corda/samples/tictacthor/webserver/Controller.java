@@ -94,14 +94,14 @@ public class Controller {
         }
     }
 
-    @PostMapping(value = "shareAccountTo/{whoAmI}/{counerParty}")
-    private ResponseEntity<String> shareAccountTo(@PathVariable String whoAmI, @PathVariable String counerParty){
-        Set<Party> matchingPasties = proxy.partiesFromName(counerParty,false);
+    @PostMapping(value = "shareAccountTo/{whoAmI}/{counterParty}")
+    private ResponseEntity<String> shareAccountTo(@PathVariable String whoAmI, @PathVariable String counterParty){
+        Set<Party> matchingPasties = proxy.partiesFromName(counterParty,false);
         try{
 
             Iterator iter = matchingPasties.iterator();
             String result = proxy.startTrackedFlowDynamic(ShareAccountTo.class,whoAmI,iter.next()).getReturnValue().get();
-            return ResponseEntity.status(HttpStatus.CREATED).body("Account was shared with "+whoAmI);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Account was shared with "+counterParty);
 
         }catch (Exception e) {
             return ResponseEntity
