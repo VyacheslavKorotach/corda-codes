@@ -9,6 +9,7 @@ import net.corda.samples.tictacthor.flows.EndSopFlow;
 import net.corda.samples.tictacthor.flows.StartSopFlow;
 import net.corda.samples.tictacthor.flows.SubmitTurnFlow;
 import net.corda.samples.tictacthor.flows.SubmitTemperatureFlow;
+import net.corda.samples.tictacthor.accountUtilities.ViewSopByAccount;
 import net.corda.samples.tictacthor.states.SopState;
 import net.corda.client.jackson.JacksonSupport;
 import net.corda.core.contracts.UniqueIdentifier;
@@ -163,6 +164,19 @@ public class Controller {
             }else{
                 return ResponseEntity.status(HttpStatus.CREATED).body(""+whoAmI+" changed the SOP sub step to "+sopSubStep);
             }
+        }catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "viewSopByAccount/{whoAmI}")
+    private ResponseEntity<String> viewSopByAccount(@PathVariable String whoAmI){
+        try{
+            List<String> sopInfo = proxy.startTrackedFlowDynamic(ViewSopByAccount.class,whoAmI).getReturnValue().get();
+            return ResponseEntity.status(HttpStatus.CREATED).body("SOP Info: "+sopInfo);
+
         }catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
