@@ -2,13 +2,10 @@ package net.corda.samples.tictacthor.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo;
-import com.r3.corda.lib.accounts.workflows.services.AccountService;
 import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount;
+import com.r3.corda.lib.accounts.workflows.services.AccountService;
 import com.r3.corda.lib.accounts.workflows.services.KeyManagementBackedAccountService;
 import com.sun.istack.NotNull;
-import net.corda.samples.tictacthor.accountUtilities.NewKeyForAccount;
-import net.corda.samples.tictacthor.contracts.SopContract;
-import net.corda.samples.tictacthor.states.SopState;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.crypto.TransactionSignature;
@@ -20,6 +17,9 @@ import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
+import net.corda.samples.tictacthor.accountUtilities.NewKeyForAccount;
+import net.corda.samples.tictacthor.contracts.SopContract;
+import net.corda.samples.tictacthor.states.SopState;
 
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 // ******************
 @InitiatingFlow
 @StartableByRPC
-public class EndSopFlow extends FlowLogic<String> {
+public class SubmitTemperatureFlow extends FlowLogic<String> {
 
     private final ProgressTracker progressTracker = tracker();
 
@@ -61,13 +61,16 @@ public class EndSopFlow extends FlowLogic<String> {
     private String whoAmI ;
     private String whereTo;
     private UniqueIdentifier sopId;
-
+    private int sop;
+    private float temperature;
 
     //public constructor
-    public EndSopFlow(UniqueIdentifier sopId, String whoAmI, String whereTo){
+    public SubmitTemperatureFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int sop, float temperature){
         this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
+        this.sop = sop;
+        this.temperature = temperature;
     }
 
     @Suspendable
@@ -82,16 +85,24 @@ public class EndSopFlow extends FlowLogic<String> {
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
-        //retrieve the sop
+        //retrieve the SOP
         QueryCriteria.LinearStateQueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria()
                 .withUuid(Arrays.asList(sopId.getId())).withStatus(Vault.StateStatus.UNCONSUMED);
         StateAndRef<SopState> inputSopStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
         if(inputSopStateAndRef == null){
             throw new IllegalArgumentException("You are in another SOP");
         }
+        SopState inputSopState = inputSopStateAndRef.getState().getData();
+
+        //check turns
+        if (!inputSopState.getCurrentPlayerParty().toString().equals(myAccount.getIdentifier().toString())){
+            throw new IllegalArgumentException("It's not your turn! "+ inputSopState.getCurrentPlayerParty() + " my account: "+myAccount.getIdentifier());
+        }
 
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
         //generating State for transfer
+        SopState outputSopState = inputSopState.returnNewSopAfterMove(sop,new AnonymousParty(myKey), targetAcctAnonymousParty);
+        outputSopState.setTemperatureValue(temperature);
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
@@ -104,8 +115,8 @@ public class EndSopFlow extends FlowLogic<String> {
 
         TransactionBuilder txbuilder = new TransactionBuilder(notary)
                 .addInputState(inputSopStateAndRef)
-                .addCommand(new SopContract.Commands.EndSop(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
-
+                .addOutputState(outputSopState)
+                .addCommand(new SopContract.Commands.SubmitTurn(),Arrays.asList(myKey,targetAcctAnonymousParty.getOwningKey()));
 
         progressTracker.setCurrentStep(SIGNING_TRANSACTION);
         //self verify and sign Transaction
@@ -119,24 +130,21 @@ public class EndSopFlow extends FlowLogic<String> {
         SignedTransaction signedByCounterParty = locallySignedTx.withAdditionalSignatures(accountToMoveToSignature);
         progressTracker.setCurrentStep(FINALISING_TRANSACTION);
         //Finalize
-        subFlow(new FinalityFlow(signedByCounterParty,
+        SignedTransaction stx = subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
-
-        // We also distribute the transaction to the national regulator manually.
-//        subFlow(new ReportManually(signedByCounterParty, nationalRegulator));
-
-        return "SOP Over";
+        subFlow(new SyncSop(outputSopState.getLinearId().toString(),targetAccount.getHost()));
+        return "rxId: "+stx.getId();
     }
 }
 
 
-@InitiatedBy(EndSopFlow.class)
-class EndSopFlowResponder extends FlowLogic<Void> {
+@InitiatedBy(SubmitTemperatureFlow.class)
+class SubmitTemperatureFlowResponder extends FlowLogic<Void> {
     //private variable
     private FlowSession counterpartySession;
 
     //Constructor
-    public EndSopFlowResponder(FlowSession counterpartySession) {
+    public SubmitTemperatureFlowResponder(FlowSession counterpartySession) {
         this.counterpartySession = counterpartySession;
     }
 
