@@ -85,7 +85,7 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
-        //retrieve the game board
+        //retrieve the SOP
         QueryCriteria.LinearStateQueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria()
                 .withUuid(Arrays.asList(sopId.getId())).withStatus(Vault.StateStatus.UNCONSUMED);
         StateAndRef<SopState> inputSopStateAndRef = getServiceHub().getVaultService().queryBy(SopState.class,queryCriteria).getStates().get(0);
