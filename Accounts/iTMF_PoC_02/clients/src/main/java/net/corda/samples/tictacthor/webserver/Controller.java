@@ -8,7 +8,6 @@ import net.corda.samples.tictacthor.accountUtilities.mySop;
 import net.corda.samples.tictacthor.flows.EndSopFlow;
 import net.corda.samples.tictacthor.flows.StartSopFlow;
 import net.corda.samples.tictacthor.flows.SubmitTurnFlow;
-import net.corda.samples.tictacthor.flows.SubmitTemperatureFlow;
 import net.corda.samples.tictacthor.states.SopState;
 import net.corda.client.jackson.JacksonSupport;
 import net.corda.core.contracts.UniqueIdentifier;
@@ -153,8 +152,7 @@ public class Controller {
         }
         try{
             UniqueIdentifier gameId = proxy.startTrackedFlowDynamic(StartSopFlow.class,whoAmI,competeWith).getReturnValue().get();
-//            String submitTurn = proxy.startTrackedFlowDynamic(SubmitTurnFlow.class, gameId, whoAmI,competeWith,x,y).getReturnValue().get();
-            String submitTurn = proxy.startTrackedFlowDynamic(SubmitTurnFlow.class, gameId, whoAmI,competeWith,pos).getReturnValue().get();
+            String submitTurn = proxy.startTrackedFlowDynamic(SubmitTurnFlow.class, gameId, whoAmI,competeWith,x,y).getReturnValue().get();
             return ResponseEntity.status(HttpStatus.CREATED).body("Game Id Created: "+gameId+", "+whoAmI+" made the first move on position ["+x+","+y+"].");
 
         }catch (Exception e) {
