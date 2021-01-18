@@ -52,14 +52,14 @@ public class SopContract implements Contract {
                 return null;
             });
         }else if (command.getValue() instanceof Commands.EndSop){
-            requireThat(require -> {
-                SopState input = (SopState) inputs.get(0);
-                SopState output = (SopState) outputs.get(0);
-                require.using("Input must have status SOP_COMPLETED", input.getStatus() == SopState.Status.SOP_COMPLETED);
-                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", input.getSop() == 3 || input.getSop() == 4);
-                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", input.getSop() == output.getSop());
-                return null;
-            });
+//            requireThat(require -> {
+//                SopState input = (SopState) inputs.get(0);
+//                SopState output = (SopState) outputs.get(0);
+//                require.using("Input must have status SOP_COMPLETED", input.getStatus() == SopState.Status.SOP_COMPLETED);
+//                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", input.getSop() == 3 || input.getSop() == 4);
+//                require.using("Next Sub Step of SOP either must be increment of previous one or be the Cancel Step", input.getSop() == output.getSop());
+//                return null;
+//            });
         }else{
             throw new IllegalArgumentException("Command not found!");
         }
