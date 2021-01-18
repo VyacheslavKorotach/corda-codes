@@ -122,9 +122,9 @@ public class Controller {
 //        }
 //    }
 
-    @PostMapping(value = "ShareAccountTo/{whoAmI}/{team}")
-    private ResponseEntity<String> shareAccountTo(@PathVariable String whoAmI, @PathVariable String team, @PathVariable String competeWith){
-        Set<Party> matchingPasties = proxy.partiesFromName(team,false);
+    @PostMapping(value = "ShareAccountTo/{whoAmI}/{Party}")
+    private ResponseEntity<String> shareAccountTo(@PathVariable String whoAmI, @PathVariable String Party){
+        Set<Party> matchingPasties = proxy.partiesFromName(Party,false);
         try{
 
             Iterator iter = matchingPasties.iterator();
