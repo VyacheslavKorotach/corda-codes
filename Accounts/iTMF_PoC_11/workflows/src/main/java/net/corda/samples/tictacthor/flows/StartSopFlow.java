@@ -78,11 +78,11 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
 
-        //check if this account is in another game
+        //check if this account is in another SOP
         QueryCriteria.VaultQueryCriteria criteria = new QueryCriteria.VaultQueryCriteria().withExternalIds(Arrays.asList(myAccount.getIdentifier().getId()));
         List<StateAndRef<SopState>> results = getServiceHub().getVaultService().queryBy(SopState.class,criteria).getStates();
         if(results.size() != 0){
-            throw new IllegalArgumentException("You are in another game");
+            throw new IllegalArgumentException("You are in another SOP");
         }
 
         progressTracker.setCurrentStep(GENERATING_TRANSACTION);
