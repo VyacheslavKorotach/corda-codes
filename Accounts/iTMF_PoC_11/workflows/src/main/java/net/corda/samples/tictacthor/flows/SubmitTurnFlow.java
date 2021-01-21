@@ -64,13 +64,15 @@ public class SubmitTurnFlow extends FlowLogic<String> {
     private String whereTo;
     private UniqueIdentifier sopId;
     private int sop;
+    private Party dataKeeper;
 
     //public constructor
-    public SubmitTurnFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int sop){
+    public SubmitTurnFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int sop, Party dataKeeper){
         this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
         this.sop = sop;
+        this.dataKeeper = dataKeeper;
     }
 
     @Suspendable
@@ -133,6 +135,10 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         SignedTransaction stx = subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
         subFlow(new SyncSop(outputSopState.getLinearId().toString(),targetAccount.getHost()));
+
+        // We also distribute the transaction to the regulator manually.
+        subFlow(new ReportManually(signedByCounterParty, dataKeeper));
+
         return "rxId: "+stx.getId();
     }
 }

@@ -63,14 +63,16 @@ public class SubmitTemperatureFlow extends FlowLogic<String> {
     private UniqueIdentifier sopId;
     private int sop;
     private float temperature;
+    private Party dataKeeper;
 
     //public constructor
-    public SubmitTemperatureFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int sop, float temperature){
+    public SubmitTemperatureFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, int sop, float temperature, Party dataKeeper){
         this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
         this.sop = sop;
         this.temperature = temperature;
+        this.dataKeeper = dataKeeper;
     }
 
     @Suspendable
@@ -133,6 +135,10 @@ public class SubmitTemperatureFlow extends FlowLogic<String> {
         SignedTransaction stx = subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
         subFlow(new SyncSop(outputSopState.getLinearId().toString(),targetAccount.getHost()));
+
+        // We also distribute the transaction to the regulator manually.
+        subFlow(new ReportManually(signedByCounterParty, dataKeeper));
+
         return "rxId: "+stx.getId();
     }
 }

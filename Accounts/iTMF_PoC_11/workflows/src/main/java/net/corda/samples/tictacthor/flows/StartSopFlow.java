@@ -130,7 +130,7 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
         subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
 
-        // We also distribute the transaction to the national regulator manually.
+        // We also distribute the transaction to the regulator manually.
         subFlow(new ReportManually(signedByCounterParty, dataKeeper));
 
         return initialSopState.getLinearId();
