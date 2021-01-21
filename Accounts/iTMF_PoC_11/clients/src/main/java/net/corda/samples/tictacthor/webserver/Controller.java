@@ -118,7 +118,7 @@ public class Controller {
         String dataKeeper = "Regulator";
         try{
             UniqueIdentifier sopNum = proxy.startTrackedFlowDynamic(StartSopFlow.class,whoAmI, counterParty, dataKeeper).getReturnValue().get();
-            String submitTurn = proxy.startTrackedFlowDynamic(SubmitTurnFlow.class, sopNum, whoAmI, counterParty,sopSubStep).getReturnValue().get();
+            String submitTurn = proxy.startTrackedFlowDynamic(SubmitTurnFlow.class, sopNum, whoAmI, counterParty,sopSubStep, dataKeeper).getReturnValue().get();
             return ResponseEntity.status(HttpStatus.CREATED).body("SOP Num Created: "+sopNum+", "+whoAmI+" set the 0 sub step of the SOP");
 
         }catch (Exception e) {
@@ -139,7 +139,7 @@ public class Controller {
             String submitTurn = proxy.startTrackedFlowDynamic(SubmitTurnFlow.class, sopId, whoAmI, counterParty,sopSubStep, dataKeeper).getReturnValue().get();
 
             if(isSopCompleted(whoAmI)){
-                proxy.startTrackedFlowDynamic(EndSopFlow.class, sopId, whoAmI, counterParty).getReturnValue().get();
+                proxy.startTrackedFlowDynamic(EndSopFlow.class, sopId, whoAmI, counterParty, dataKeeper).getReturnValue().get();
                 return ResponseEntity.status(HttpStatus.CREATED).body(""+whoAmI+" changed the SOP sub step to "+sopSubStep+" and SOP was completed");
             }else{
                 return ResponseEntity.status(HttpStatus.CREATED).body(""+whoAmI+" changed the SOP sub step to "+sopSubStep);
