@@ -1,5 +1,6 @@
 package net.corda.samples.tictacthor;
 
+import net.corda.core.identity.Party;
 import com.google.common.collect.ImmutableList;
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo;
 import com.r3.corda.lib.accounts.workflows.services.AccountService;
@@ -62,7 +63,9 @@ public class FlowTests {
     }
 
     @Test
-    public void CreateGameTest() throws ExecutionException, InterruptedException {
+    public void CreateSopTest() throws ExecutionException, InterruptedException {
+//        Party Regulator;
+
         CreateNewAccount createAcct = new CreateNewAccount("TestAccountA");
         Future<String> future = a.startFlow(createAcct);
         network.runNetwork();
@@ -78,9 +81,9 @@ public class FlowTests {
         Future<String> future4 = b.startFlow(shareBToA);
         network.runNetwork();
 
-        StartSopFlow startGame = new StartSopFlow("TestAccountA","TestAccountB");
-        Future<UniqueIdentifier> future5 = a.startFlow(startGame);
-        network.runNetwork();
+//        StartSopFlow startGame = new StartSopFlow("TestAccountA","TestAccountB", Regulator);
+//        Future<UniqueIdentifier> future5 = a.startFlow(startGame);
+//        network.runNetwork();
 
         AccountService accountService = b.getServices().cordaService(KeyManagementBackedAccountService.class);
         AccountInfo myAccount = accountService.accountInfo("TestAccountB").get(0).getState().getData();

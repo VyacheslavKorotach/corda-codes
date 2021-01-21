@@ -59,11 +59,14 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
     //private variables
     private String whoAmI ;
     private String whereTo;
+    private Party dataKeeper;
 
     //public constructor
-    public StartSopFlow(String whoAmI, String whereTo){
+    public StartSopFlow(String whoAmI, String whereTo, Party dataKeeper){
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
+        this.dataKeeper = dataKeeper;
+
     }
 
     @Suspendable
@@ -126,6 +129,10 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
         //Finalize
         subFlow(new FinalityFlow(signedByCounterParty,
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
+
+        // We also distribute the transaction to the national regulator manually.
+        subFlow(new ReportManually(signedByCounterParty, dataKeeper));
+
         return initialSopState.getLinearId();
     }
 }
