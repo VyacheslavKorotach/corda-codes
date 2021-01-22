@@ -59,10 +59,10 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
     //private variables
     private String whoAmI ;
     private String whereTo;
-    private Party dataKeeper;
+    private String dataKeeper;
 
     //public constructor
-    public StartSopFlow(String whoAmI, String whereTo, Party dataKeeper){
+    public StartSopFlow(String whoAmI, String whereTo, String dataKeeper){
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
         this.dataKeeper = dataKeeper;
@@ -80,6 +80,9 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
 
         AccountInfo targetAccount = accountService.accountInfo(whereTo).get(0).getState().getData();
         AnonymousParty targetAcctAnonymousParty = subFlow(new RequestKeyForAccount(targetAccount));
+
+        AccountInfo regulatorInfo = accountService.accountInfo(dataKeeper).get(0).getState().getData();
+//        AnonymousParty regulatorAnonymousParty = subFlow(new RequestKeyForAccount(regulatorInfo));
 
         //check if this account is in another SOP
         QueryCriteria.VaultQueryCriteria criteria = new QueryCriteria.VaultQueryCriteria().withExternalIds(Arrays.asList(myAccount.getIdentifier().getId()));
@@ -131,7 +134,8 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
 
         // We also distribute the transaction to the regulator manually.
-        subFlow(new ReportManually(signedByCounterParty, dataKeeper));
+        Party Regulator = regulatorInfo.getHost();
+        subFlow(new ReportManually(signedByCounterParty, Regulator));
 
         return initialSopState.getLinearId();
     }
