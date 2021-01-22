@@ -61,15 +61,13 @@ public class EndSopFlow extends FlowLogic<String> {
     private String whoAmI ;
     private String whereTo;
     private UniqueIdentifier sopId;
-    private Party dataKeeper;
 
 
     //public constructor
-    public EndSopFlow(UniqueIdentifier sopId, String whoAmI, String whereTo, Party dataKeeper){
+    public EndSopFlow(UniqueIdentifier sopId, String whoAmI, String whereTo){
         this.sopId = sopId;
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
-        this.dataKeeper = dataKeeper;;
     }
 
     @Suspendable
@@ -125,7 +123,9 @@ public class EndSopFlow extends FlowLogic<String> {
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
 
         // We also distribute the transaction to the regulator manually.
-        subFlow(new ReportManually(signedByCounterParty, dataKeeper));
+        String dataKeeper = "Regulator";
+        AccountInfo regulatorInfo = accountService.accountInfo(dataKeeper).get(0).getState().getData();
+        subFlow(new ReportManually(signedByCounterParty, regulatorInfo.getHost()));
 
         return "SOP Over";
     }
