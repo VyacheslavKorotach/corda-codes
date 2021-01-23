@@ -123,7 +123,7 @@ public class EndSopFlow extends FlowLogic<String> {
                 Arrays.asList(sessionForAccountToSendTo).stream().filter(it -> it.getCounterparty() != getOurIdentity()).collect(Collectors.toList())));
 
         // We also distribute the transaction to the regulator manually.
-        String dataKeeper = "Regulator";
+        String dataKeeper = "datakeeper";
         AccountInfo regulatorInfo = accountService.accountInfo(dataKeeper).get(0).getState().getData();
         subFlow(new ReportManually(signedByCounterParty, regulatorInfo.getHost()));
 

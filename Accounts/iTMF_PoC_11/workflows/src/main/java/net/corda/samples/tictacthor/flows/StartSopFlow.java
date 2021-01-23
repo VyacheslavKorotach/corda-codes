@@ -59,14 +59,14 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
     //private variables
     private String whoAmI ;
     private String whereTo;
-    private String dataKeeper;
+//    private String dataKeeper;
 
     //public constructor
-    public StartSopFlow(String whoAmI, String whereTo, String dataKeeper){
-//    public StartSopFlow(String whoAmI, String whereTo){
+//    public StartSopFlow(String whoAmI, String whereTo, String dataKeeper){
+    public StartSopFlow(String whoAmI, String whereTo){
         this.whoAmI = whoAmI;
         this.whereTo = whereTo;
-        this.dataKeeper = dataKeeper;
+//        this.dataKeeper = dataKeeper;
 
     }
 
@@ -133,7 +133,7 @@ public class StartSopFlow extends FlowLogic<UniqueIdentifier> {
 
         //        Party Regulator = regulatorInfo.getHost();
         // We also distribute the transaction to the regulator manually.
-//        String dataKeeper = "Regulator";
+        String dataKeeper = "datakeeper";
         AccountInfo regulatorInfo = accountService.accountInfo(dataKeeper).get(0).getState().getData();
         subFlow(new ReportManually(signedByCounterParty, regulatorInfo.getHost()));
 

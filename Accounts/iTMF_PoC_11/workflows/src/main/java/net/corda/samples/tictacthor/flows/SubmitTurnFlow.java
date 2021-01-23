@@ -135,7 +135,7 @@ public class SubmitTurnFlow extends FlowLogic<String> {
         subFlow(new SyncSop(outputSopState.getLinearId().toString(),targetAccount.getHost()));
 
         // We also distribute the transaction to the regulator manually.
-        String dataKeeper = "Regulator";
+        String dataKeeper = "datakeeper";
         AccountInfo regulatorInfo = accountService.accountInfo(dataKeeper).get(0).getState().getData();
         subFlow(new ReportManually(signedByCounterParty, regulatorInfo.getHost()));
 
