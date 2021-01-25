@@ -33,11 +33,11 @@ springBoot {
 task bootRunPatients(type: JavaExec, dependsOn: jar) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'net.corda.samples.tictacthor.webserver.Starter'
-    args '--server.port=8080', '--config.rpc.host=3.8.118.63', '--config.rpc.port=10006', '--config.rpc.username=user1', '--config.rpc.password=test'
+    args '--server.port=8080', '--config.rpc.host=3.8.235.113', '--config.rpc.port=10006', '--config.rpc.username=user1', '--config.rpc.password=test'
 }
 
 task bootRunParamedics(type: JavaExec, dependsOn: jar) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'net.corda.samples.tictacthor.webserver.Starter'
-    args '--server.port=8090', '--config.rpc.host=18.135.104.65', '--config.rpc.port=10009', '--config.rpc.username=user1', '--config.rpc.password=test'
+    args '--server.port=8090', '--config.rpc.host=35.178.253.78', '--config.rpc.port=10009', '--config.rpc.username=user1', '--config.rpc.password=test'
 }
